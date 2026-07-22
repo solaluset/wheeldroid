@@ -1,0 +1,140 @@
+name: Build wheels
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+  release:
+    types:
+      - published
+
+jobs:
+  get_urls:
+    name: Fetch sdist URLs
+    runs-on: ubuntu-latest
+
+    outputs:
+      urls: ${{ steps.get-urls.outputs.urls }}
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+
+      - name: Install dependencies
+        run: |
+          set -e
+          pip install -r requirements.txt
+
+      - name: Fetch URLs
+        id: get-urls
+        run: |
+          set -e
+          output=$(python get-urls.py)
+          echo "urls=$output" >> "$GITHUB_OUTPUT"
+
+  build_wheels:
+    name: Build wheels
+    needs: [get_urls]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        url: ${{ fromJson(needs.get_urls.outputs.urls) }}
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install Android command line tools
+        id: android-sdk
+        run: |
+          set -e
+
+          curl -o android.zip "https://dl.google.com/android/repository/commandlinetools-linux-15859902_latest.zip"
+          mkdir -p android-sdk/cmdline-tools
+          (cd android-sdk/cmdline-tools && unzip ../../android.zip)
+          mv android-sdk/cmdline-tools/cmdline-tools android-sdk/cmdline-tools/latest
+
+      - name: Download sdist
+        id: download-sdist
+        env:
+          URL: ${{ matrix.url }}
+        run: |
+          set -e
+          # get rid of this, it screws `git apply`
+          rm -fr .git
+          mkdir -p build
+          cd build
+          curl -O "$URL"
+          file=$(echo *)
+          tar -xf "$file"
+          rm "$file"
+          # strip version from name
+          package=$(sed 's/-[^$]*$//' <<< "$file")
+          mv * "$package"
+          cd "$package"
+          if [ -f "../../patches/$package.patch" ]; then
+            echo "Applying $package.patch"
+            git apply "../../patches/$package.patch"
+          fi
+          echo "package=$package" >> "$GITHUB_OUTPUT"
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v4.1.0
+        with:
+          package-dir: build/${{ steps.download-sdist.outputs.package }}
+          extras: uv
+        env:
+          CIBW_PLATFORM: android
+          CIBW_ARCHS_ANDROID: arm64_v8a
+          CIBW_REPAIR_WHEEL_COMMAND_ANDROID: "LDPATHS={ldpaths} DEST_DIR={dest_dir} WHEEL={wheel} ./auditwheel.sh"
+          CIBW_BUILD_FRONTEND: "build[uv]"
+          CIBW_ENVIRONMENT_ANDROID: "LDSHARED=${{ github.workspace }}/ldshared.sh"
+
+          ANDROID_HOME: "${{ github.workspace }}/android-sdk"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.download-sdist.outputs.package }}
+          path: ./wheelhouse/*.whl
+
+  release:
+    name: Create release
+    needs: [build_wheels]
+    if: github.ref_name == 'main' || (github.event_name == 'pull_request' && github.event.pull_request.user.login == 'dependabot[bot]')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          path: artifacts
+
+      - name: Pack final archive
+        run: |
+          set -e
+          mkdir wheels
+          cd artifacts
+          for file in *; do
+            package=$(sed 's/-[^$]*$//' <<< "$file")
+            mkdir -p "../wheels/$package"
+            if [ -d "$file" ]; then
+              mv "$file/"* "../wheels/$package"
+            else
+              mv "$file" "../wheels/$package"
+            fi
+          done
+          cd ../wheels
+          zip -r ../wheels.zip *
+
+      - name: Create release
+        uses: softprops/action-gh-release@v3.0.2
+        with:
+          tag_name: v0.0.1
+          files: |
+            wheels.zip
