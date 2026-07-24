@@ -1,0 +1,12 @@
+diff --git a/pyproject.toml b/pyproject.toml
+index 846bad8..00981db 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -204,7 +204,6 @@ skip_install = true
+ commands = [["uv", "lock", {replace = "posargs", default = ["-U"], extend = true}]]
+ 
+ [tool.cibuildwheel]
+-enable = "cpython-freethreading"
+ build-frontend = "build[uv]"
+ 
+ [[tool.cibuildwheel.overrides]]
