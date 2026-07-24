@@ -74,7 +74,7 @@ jobs:
           tar -xf "$file"
           rm "$file"
           # split name and version
-          eval "package=$(tr '[:upper:]' '[:lower:]' <<< "$file" | sed 's/-/ version=/')"
+          eval "package=$(echo * | tr '[:upper:]' '[:lower:]' | sed 's/-/ version=/')"
           mv * "$package"
           cd "$package"
           for patch_name in "$package-$version" "$package"; do
