@@ -1,0 +1,22 @@
+diff --git a/setup.py b/setup.py
+index 96d4b32..9ddb781 100644
+--- a/setup.py
++++ b/setup.py
+@@ -150,6 +150,7 @@ class build_clib(_build_clib):
+             "--disable-debug",
+             "--disable-dependency-tracking",
+             "--with-pic",
++            "--host=aarch64-linux-android24",
+         ]
+         if platform.system() == "SunOS":
+             # On Solaris, libssp doesn't link statically and causes linker
+@@ -168,9 +169,6 @@ class build_clib(_build_clib):
+         # Build the library
+         subprocess.check_call(["make"] + make_args, cwd=build_temp)
+ 
+-        # Check the build library
+-        subprocess.check_call(["make", "check"] + make_args, cwd=build_temp)
+-
+         # Install the built library
+         subprocess.check_call(["make", "install"] + make_args, cwd=build_temp)
+ 

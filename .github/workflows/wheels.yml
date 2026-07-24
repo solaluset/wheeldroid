@@ -77,10 +77,13 @@ jobs:
           eval "package=$(sed 's/-/ version=/' <<< "$file")"
           mv * "$package"
           cd "$package"
-          if [ -f "../../patches/$package.patch" ]; then
-            echo "Applying $package.patch"
-            git apply "../../patches/$package.patch"
-          fi
+          for patch_name in "$package-$version" "$package"; do
+            if [ -f "../../patches/$patch_name.patch" ]; then
+              echo "Applying $patch_name.patch"
+              git apply "../../patches/$patch_name.patch"
+              break
+            fi
+          done
           echo "package=$package" >> "$GITHUB_OUTPUT"
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
