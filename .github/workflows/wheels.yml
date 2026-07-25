@@ -71,7 +71,7 @@ jobs:
           cd build
           curl -O "$URL"
           file=$(echo *)
-          tar -xf "$file"
+          tar -axf "$file"
           rm "$file"
           # split name and version
           eval "package=$(echo * | tr '[:upper:]' '[:lower:]' | sed 's/-/ version=/')"
@@ -135,6 +135,7 @@ jobs:
           done
           cd ../wheels
           zip -r ../wheels.zip *
+          tar -acf ../wheels.tar.gz
 
       - name: Create release
         uses: softprops/action-gh-release@v3.0.2
@@ -142,3 +143,4 @@ jobs:
           tag_name: v0.0.1
           files: |
             wheels.zip
+            wheels.tar.gz
