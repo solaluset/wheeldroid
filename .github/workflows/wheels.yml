@@ -41,7 +41,7 @@ jobs:
   build_wheels:
     name: Build wheels
     needs: [get_urls]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     strategy:
       matrix:
         url: ${{ fromJson(needs.get_urls.outputs.urls) }}
