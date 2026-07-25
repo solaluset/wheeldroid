@@ -54,13 +54,13 @@ jobs:
         run: |
           set -e
 
-          curl -o android.zip "https://dl.google.com/android/repository/commandlinetools-linux-15859902_latest.zip"
+          curl -LsS -o android.zip "https://dl.google.com/android/repository/commandlinetools-linux-15859902_latest.zip"
           mkdir -p android-sdk/cmdline-tools
           (cd android-sdk/cmdline-tools && unzip ../../android.zip)
           mv android-sdk/cmdline-tools/cmdline-tools android-sdk/cmdline-tools/latest
 
-      - name: Download sdist
-        id: download-sdist
+      - name: Prepare sdist
+        id: prepare-sdist
         env:
           URL: ${{ matrix.url }}
         run: |
@@ -69,8 +69,9 @@ jobs:
           rm -fr .git
           mkdir -p build
           cd build
-          curl -O "$URL"
+          curl -LsS -O "$URL"
           file=$(echo *)
+          echo "Unpacking $file"
           tar -axf "$file"
           rm "$file"
           # split name and version
@@ -90,7 +91,7 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v4.1.0
         with:
-          package-dir: build/${{ steps.download-sdist.outputs.package }}
+          package-dir: build/${{ steps.prepare-sdist.outputs.package }}
           extras: uv
         env:
           CIBW_PLATFORM: android
@@ -103,7 +104,7 @@ jobs:
 
       - uses: actions/upload-artifact@v7
         with:
-          name: ${{ steps.download-sdist.outputs.package }}-${{ steps.download-sdist.outputs.version }}
+          name: ${{ steps.prepare-sdist.outputs.package }}-${{ steps.prepare-sdist.outputs.version }}
           path: ./wheelhouse/*.whl
 
   release:
