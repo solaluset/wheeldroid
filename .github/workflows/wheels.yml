@@ -125,7 +125,7 @@ jobs:
           mkdir wheels
           cd artifacts
           for file in *; do
-            package=$(sed 's/-[^$]*$//' <<< "$file" | tr '_' '-')
+            package=$(sed 's/-[^$]*$//' <<< "$file" | sed -E 's/[-_.]+/-/g')
             mkdir -p "../wheels/$package"
             if [ -d "$file" ]; then
               mv "$file/"* "../wheels/$package"
