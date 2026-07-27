@@ -7,6 +7,6 @@ davey==0.1.6
 brotli==1.2.0
 greenlet==3.5.4
 pycryptodomex==3.23.0
-audioop_lts==0.2.2
+audioop-lts==0.2.2
 orjson==3.11.9
 markupsafe==3.0.3
