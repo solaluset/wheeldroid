@@ -9,6 +9,8 @@ on:
   release:
     types:
       - published
+  schedule:
+      - cron: '45 4 * * *'
 
 jobs:
   get_urls:
@@ -35,8 +37,22 @@ jobs:
         id: get-urls
         run: |
           set -e
+          curl -LsS "https://github.com/$GITHUB_REPOSITORY/releases/latest/download/wheels.tar.gz" | tar --wildcards -ztf - '*.whl' > cached.txt
           output=$(python get-urls.py)
           echo "urls=$output" >> "$GITHUB_OUTPUT"
+
+          git config --local user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git config --local user.name 'github-actions[bot]'
+          git add packages.json
+          git commit -m 'Update package list'
+
+      - name: Push updated package list
+        uses: ad-m/github-push-action@v1.3.0
+        permissions:
+          contents: write
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
 
   build_wheels:
     name: Build wheels
@@ -112,8 +128,6 @@ jobs:
     needs: [build_wheels]
     if: github.ref_name == 'main' || (github.event_name == 'pull_request' && github.event.pull_request.user.login == 'dependabot[bot]')
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
 
     steps:
       - uses: actions/download-artifact@v8
@@ -135,11 +149,14 @@ jobs:
             fi
           done
           cd ../wheels
+          curl -LsS "https://github.com/$GITHUB_REPOSITORY/releases/latest/download/wheels.tar.gz" | tar -zxkf -
           zip -r ../wheels.zip *
           tar -acf ../wheels.tar.gz *
 
       - name: Create release
         uses: softprops/action-gh-release@v3.0.2
+        permissions:
+          contents: write
         with:
           tag_name: v0.0.1
           files: |

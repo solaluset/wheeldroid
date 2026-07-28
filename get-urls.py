@@ -44,6 +44,7 @@ def main():
     with open("packages.json", "w") as file:
         json.dump(packages, file, indent=2)
     json.dump(urls, sys.stdout)
+    sys.stdout.write("\n")
 
 
 if __name__ == "__main__":
