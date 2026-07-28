@@ -60,6 +60,7 @@ jobs:
     name: Build wheels
     needs: [get_urls]
     runs-on: ubuntu-latest
+    if: needs.get_urls.outputs.urls != '[]'
     strategy:
       matrix:
         url: ${{ fromJson(needs.get_urls.outputs.urls) }}
