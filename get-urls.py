@@ -23,7 +23,7 @@ def fetch_sdist_urls(
     for version in versions:
         for file in data["releases"][version]:
             if file["packagetype"] == "sdist":
-                yield (package, version), file["url"]
+                yield (package.lower(), version), file["url"]
                 break
         else:
             raise RuntimeError(f"sdist for {package} {version} not found")
@@ -43,8 +43,8 @@ def main():
 
     with open("packages.json", "w") as file:
         json.dump(packages, file, indent=2)
+        file.write("\n")
     json.dump(urls, sys.stdout)
-    sys.stdout.write("\n")
 
 
 if __name__ == "__main__":
