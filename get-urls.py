@@ -1,40 +1,49 @@
-import sys
 import json
+import sys
+from collections.abc import Iterable
 from urllib.request import urlopen
-from packaging.version import Version
-from packaging.requirements import Requirement
 
 
-def txt_parser(content: str) -> list[str]:
-    return [
-        line
-        for line in map(str.strip, content.splitlines())
-        if line and not line.startswith(("#", "./", "-r "))
-    ]
+def parse_cached_list(file) -> Iterable[tuple[str, str]]:
+    for line in file.readlines():
+        pkg, other = line.split("/")
+        version = other.split("-")[1]
+        yield pkg, version
 
 
-def get_current_version(requirement: Requirement) -> Version | None:
-    if len(requirement.specifier) != 1:
-        return None
-    specifier = next(iter(requirement.specifier))
-    if specifier.operator != "==":
-        return None
-    return Version(specifier.version)
-
-
-def get_sdist_url(requirement: Requirement) -> str:
-    with urlopen(f"https://pypi.org/pypi/{requirement.name}/json") as response:
+def fetch_sdist_urls(
+    package: str, versions: list[str]
+) -> Iterable[tuple[tuple[str, str], str]]:
+    with urlopen(f"https://pypi.org/pypi/{package}/json") as response:
         data = json.load(response)
-    for file in data["releases"][str(get_current_version(requirement))]:
-        if file["packagetype"] == "sdist":
-            return file["url"]
-    raise RuntimeError("sdist not found")
+    latest_version = data["info"]["version"]
+    if latest_version not in versions:
+        versions.append(latest_version)
+
+    for version in versions:
+        for file in data["releases"][version]:
+            if file["packagetype"] == "sdist":
+                yield (package, version), file["url"]
+                break
+        else:
+            raise RuntimeError(f"sdist for {package} {version} not found")
 
 
 def main():
-    with open("packages.txt", "r") as file:
-        packages = [Requirement(req) for req in txt_parser(file.read())]
-    json.dump([get_sdist_url(pkg) for pkg in packages], sys.stdout)
+    with open("packages.json", "r") as file:
+        packages = json.load(file)
+    with open("cached.txt", "r") as file:
+        cached = list(parse_cached_list(file))
+
+    urls = []
+    for package, versions in packages.items():
+        for info, url in fetch_sdist_urls(package, versions):
+            if info not in cached:
+                urls.append(url)
+
+    with open("packages.json", "w") as file:
+        json.dump(packages, file, indent=2)
+    json.dump(urls, sys.stdout)
 
 
 if __name__ == "__main__":
