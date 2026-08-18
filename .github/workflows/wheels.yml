@@ -45,8 +45,8 @@ jobs:
 
           git config --local user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git config --local user.name 'github-actions[bot]'
-          if git diff packages.json | grep -q .; then
-            git add packages.json
+          if git diff packages.json5 | grep -q .; then
+            git add packages.json5
             git commit -m 'Update package list'
           fi
 

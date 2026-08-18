@@ -3,6 +3,8 @@ import sys
 from collections.abc import Iterable
 from urllib.request import urlopen
 
+import jsonc
+
 
 def parse_cached_list(file) -> Iterable[tuple[str, str]]:
     for line in file.readlines():
@@ -30,8 +32,8 @@ def fetch_sdist_urls(
 
 
 def main():
-    with open("packages.json", "r") as file:
-        packages = json.load(file)
+    with open("packages.json5", "r") as file:
+        packages = jsonc.load(file)
     with open("cached.txt", "r") as file:
         cached = list(parse_cached_list(file))
 
@@ -41,8 +43,10 @@ def main():
             if info not in cached:
                 urls.append(url)
 
-    with open("packages.json", "w") as file:
-        json.dump(packages, file, indent=2)
+    # sort alphabetically
+    packages = {k: v for k, v in sorted(packages.items(), key=lambda item: item[0].lower())}
+    with open("packages.json5", "w") as file:
+        jsonc.dump(packages, file, indent=2, trailing_comma=True)
         file.write("\n")
     json.dump(urls, sys.stdout)
 

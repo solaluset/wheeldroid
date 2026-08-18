@@ -1,1 +1,1 @@
-packaging==26.2
+json-with-comments==1.2.10
