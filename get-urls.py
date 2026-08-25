@@ -26,8 +26,7 @@ def fetch_sdist_urls(
         if package.lower() == "pillow":
             # pillow has incomplete sdists, download from GH
             yield (
-                package.lower(),
-                version,
+                (package.lower(), version),
                 f"https://github.com/python-pillow/Pillow/archive/refs/tags/{version}.tar.gz",
             )
             continue
