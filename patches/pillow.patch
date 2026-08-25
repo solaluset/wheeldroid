@@ -4016,3 +4016,16 @@ index 0000000..b9fbd9f
 +        uses: pypa/gh-action-pypi-publish@ba38be9e461d3875417946c167d0b5f3d385a247 # v1.14.1
 +        with:
 +          attestations: true
+diff --git a/pyproject.toml b/pyproject.toml
+index 16d82d4..f4820fd 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -97,7 +97,7 @@ dynamic.version = { attr = "PIL.__version__" }
+ [tool.cibuildwheel]
+ build-verbosity = 1
+ config-settings = "raqm=enable raqm=vendor fribidi=vendor imagequant=disable"
+-before-all = ".github/workflows/wheels-dependencies.sh"
++before-all = "cd build/pillow && .github/workflows/wheels-dependencies.sh"
+ test-command = "cd {project} && .github/workflows/wheels-test.sh"
+ test-requires = [
+   "numpy",
