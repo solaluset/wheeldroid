@@ -107,6 +107,8 @@ jobs:
           echo "package=$package" >> "$GITHUB_OUTPUT"
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
+          echo "PATH=build/$package:$PATH" >> "$GITHUB_ENV"
+
       - name: Build wheels
         uses: pypa/cibuildwheel@v4.2.0
         with:
@@ -120,7 +122,7 @@ jobs:
           CIBW_ENVIRONMENT_ANDROID: "LDSHARED=${{ github.workspace }}/ldshared.sh"
           CIBW_BEFORE_ALL: "echo $PATH"
 
-          PATH: "build/${{ steps.prepare-sdist.outputs.package }}:${{ env.PATH }}"
+          PATH: "${{ env.PATH }}"
           ANDROID_HOME: "${{ github.workspace }}/android-sdk"
 
       - uses: actions/upload-artifact@v7
