@@ -120,7 +120,7 @@ jobs:
           CIBW_ENVIRONMENT_ANDROID: "LDSHARED=${{ github.workspace }}/ldshared.sh"
           CIBW_BEFORE_ALL: "echo $PATH"
 
-          PATH: "build/${{ steps.prepare-sdist.outputs.package }}:$PATH"
+          PATH: "build/${{ steps.prepare-sdist.outputs.package }}:${{ env.PATH }}"
           ANDROID_HOME: "${{ github.workspace }}/android-sdk"
 
       - uses: actions/upload-artifact@v7
