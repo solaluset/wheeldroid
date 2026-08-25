@@ -1,3 +1,18 @@
+diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
+index b3a5782..1f635aa 100755
+--- a/.github/workflows/wheels-dependencies.sh
++++ b/.github/workflows/wheels-dependencies.sh
+@@ -74,9 +74,9 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
+     WORKDIR=$(pwd)/build/darwin
+     BUILD_PREFIX=$(pwd)/build/deps/darwin
+ else
+-    # Build prefix will default to /usr/local
+     PLAT="${CIBW_ARCHS:-$AUDITWHEEL_ARCH}"
+     WORKDIR=$(pwd)/build
++    BUILD_PREFIX=~/.local
+     MB_ML_LIBC=${AUDITWHEEL_POLICY::9}
+     MB_ML_VER=${AUDITWHEEL_POLICY:9}
+ fi
 diff --git a/pyproject.toml b/pyproject.toml
 index 16d82d4..f4820fd 100644
 --- a/pyproject.toml
