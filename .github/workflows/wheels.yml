@@ -88,11 +88,20 @@ jobs:
           rm -fr .git
           mkdir -p build
           cd build
-          curl -LsS -O "$URL"
-          file=$(echo *)
-          echo "Unpacking $file"
-          tar -axf "$file"
-          rm "$file"
+
+          if grep -q '^git:' <<< "$URL"; then
+            # special case
+            eval "$(sed -e 's/^git:/dest=/' -e 's/:/ tag=/' -e 's/:/ url="/' -e 's/$/"/' <<< "$URL")"
+            echo "Cloning $url to $dest"
+            git clone --depth 1 --branch "$tag" --recurse-submodules "$url" "$dest"
+          else
+            curl -LsS -O "$URL"
+            file=$(echo *)
+            echo "Unpacking $file"
+            tar -axf "$file"
+            rm "$file"
+          fi
+
           # split name and version
           eval "package=$(echo * | tr '[:upper:]' '[:lower:]' | sed 's/-/ version=/')"
           mv * "$package"

@@ -16,6 +16,8 @@ def parse_cached_list(file) -> Iterable[tuple[str, str]]:
 def fetch_sdist_urls(
     package: str, versions: list[str]
 ) -> Iterable[tuple[tuple[str, str], str]]:
+    package = package.lower()
+
     with urlopen(f"https://pypi.org/pypi/{package}/json") as response:
         data = json.load(response)
     latest_version = data["info"]["version"]
@@ -23,16 +25,16 @@ def fetch_sdist_urls(
         versions.append(latest_version)
 
     for version in versions:
-        if package.lower() == "pillow":
+        if package == "pillow":
             # pillow has incomplete sdists, download from GH
             yield (
-                (package.lower(), version),
-                f"https://github.com/python-pillow/Pillow/archive/refs/tags/{version}.tar.gz",
+                (package, version),
+                f"git:{package}-{version}:{version}:https://github.com/python-pillow/Pillow",
             )
             continue
         for file in data["releases"][version]:
             if file["packagetype"] == "sdist":
-                yield (package.lower(), version), file["url"]
+                yield (package, version), file["url"]
                 break
         else:
             raise RuntimeError(f"sdist for {package} {version} not found")
