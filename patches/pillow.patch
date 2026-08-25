@@ -1,5 +1,5 @@
 diff --git a/pyproject.toml b/pyproject.toml
-index 16d82d4..e988124 100644
+index 16d82d4..f4820fd 100644
 --- a/pyproject.toml
 +++ b/pyproject.toml
 @@ -97,7 +97,7 @@ dynamic.version = { attr = "PIL.__version__" }
@@ -7,7 +7,7 @@ index 16d82d4..e988124 100644
  build-verbosity = 1
  config-settings = "raqm=enable raqm=vendor fribidi=vendor imagequant=disable"
 -before-all = ".github/workflows/wheels-dependencies.sh"
-+before-all = "cd {project} && .github/workflows/wheels-dependencies.sh"
++before-all = "cd build/pillow && .github/workflows/wheels-dependencies.sh"
  test-command = "cd {project} && .github/workflows/wheels-test.sh"
  test-requires = [
    "numpy",
