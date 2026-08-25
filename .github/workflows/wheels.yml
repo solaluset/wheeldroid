@@ -118,9 +118,9 @@ jobs:
           CIBW_REPAIR_WHEEL_COMMAND_ANDROID: "LDPATHS={ldpaths} DEST_DIR={dest_dir} WHEEL={wheel} ./auditwheel.sh"
           CIBW_BUILD_FRONTEND: "build[uv]"
           CIBW_ENVIRONMENT_ANDROID: "LDSHARED=${{ github.workspace }}/ldshared.sh"
+          CIBW_BEFORE_ALL: "cd 'build/${{ steps.prepare-sdist.outputs.package }}'"
 
           ANDROID_HOME: "${{ github.workspace }}/android-sdk"
-          SHELL: test
 
       - uses: actions/upload-artifact@v7
         with:
