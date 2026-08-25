@@ -23,6 +23,14 @@ def fetch_sdist_urls(
         versions.append(latest_version)
 
     for version in versions:
+        if package.lower() == "pillow":
+            # pillow has incomplete sdists, download from GH
+            yield (
+                package.lower(),
+                version,
+                f"https://github.com/python-pillow/Pillow/archive/refs/tags/{version}.tar.gz",
+            )
+            continue
         for file in data["releases"][version]:
             if file["packagetype"] == "sdist":
                 yield (package.lower(), version), file["url"]
@@ -44,7 +52,9 @@ def main():
                 urls.append(url)
 
     # sort alphabetically
-    packages = {k: v for k, v in sorted(packages.items(), key=lambda item: item[0].lower())}
+    packages = {
+        k: v for k, v in sorted(packages.items(), key=lambda item: item[0].lower())
+    }
     with open("packages.json5", "w") as file:
         jsonc.dump(packages, file, indent=2, trailing_comma=True)
         file.write("\n")
