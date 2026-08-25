@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index b3a5782..165b7ef 100755
+index b3a5782..3e38512 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -74,9 +74,9 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
@@ -13,15 +13,16 @@ index b3a5782..165b7ef 100755
      MB_ML_LIBC=${AUDITWHEEL_POLICY::9}
      MB_ML_VER=${AUDITWHEEL_POLICY:9}
  fi
-@@ -251,7 +251,7 @@ function build_zstd {
+@@ -250,9 +250,6 @@ function build_zstd {
+ 
  function build {
      build_xz
-     if [ -z "$IS_ALPINE" ] && [ -z "$SANITIZER" ] && [ -z "$IS_MACOS" ]; then
+-    if [ -z "$IS_ALPINE" ] && [ -z "$SANITIZER" ] && [ -z "$IS_MACOS" ]; then
 -        yum remove -y zlib-devel
-+        apt remove -y zlib1g-dev
-     fi
+-    fi
      if [[ -n "$IS_MACOS" ]]; then
          CFLAGS="$CFLAGS -headerpad_max_install_names" build_zlib_ng
+     else
 diff --git a/pyproject.toml b/pyproject.toml
 index 16d82d4..f4820fd 100644
 --- a/pyproject.toml
