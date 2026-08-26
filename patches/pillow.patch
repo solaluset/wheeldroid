@@ -1,8 +1,8 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index b3a5782..3fe93ab 100755
+index b3a5782..9ab0890 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
-@@ -74,9 +74,22 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
+@@ -74,9 +74,36 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
      WORKDIR=$(pwd)/build/darwin
      BUILD_PREFIX=$(pwd)/build/deps/darwin
  else
@@ -13,7 +13,7 @@ index b3a5782..3fe93ab 100755
 +    BUILD_PREFIX=~/.local
 +    HOST_CONFIGURE_FLAGS="--host=aarch64-linux-android24"
 +    HOST_CMAKE_FLAGS="-DCMAKE_SYSTEM_NAME=Android -DCMAKE_SYSTEM_PROCESSOR=aarch64"
-+    HOST_MESON_FLAGS="--cross-file $WORKDIR/meson-cross.txt"
++    HOST_MESON_FLAGS="--cross-file '$(pwd)/build/meson-cross.txt'"
 +    cat "$WORKDIR/meson-cross.txt"
 +    export LIBRARY_PATH="$BUILD_PREFIX/lib:${LIBRARY_PATH%:}"
 +    export LD_LIBRARY_PATH="$LIBRARY_PATH"
@@ -23,10 +23,24 @@ index b3a5782..3fe93ab 100755
 +    sudo mkdir -p /sources/android
 +    sudo ln -s "$(pwd)/build/cpu_features/ndk_compat" /sources/android/cpufeatures
 +
++    cat > build/meson-cross.txt << 'EOF'
++[binaries]
++c = 'aarch64-linux-android24-clang'
++cpp = 'aarch64-linux-android24-clang'
++ar = 'aarch64-linux-android24-ar'
++strip = 'aarch64-linux-android24-strip'
++
++[host_machine]
++system = 'android'
++cpu_family = 'aarch64'
++cpu = 'aarch64'
++endian = 'little'
++EOF
++
      MB_ML_LIBC=${AUDITWHEEL_POLICY::9}
      MB_ML_VER=${AUDITWHEEL_POLICY:9}
  fi
-@@ -144,7 +157,7 @@ function build_zlib_ng {
+@@ -144,7 +171,7 @@ function build_zlib_ng {
      ORIGINAL_HOST_CONFIGURE_FLAGS=$HOST_CONFIGURE_FLAGS
      unset HOST_CONFIGURE_FLAGS
  
@@ -35,7 +49,7 @@ index b3a5782..3fe93ab 100755
  
      HOST_CONFIGURE_FLAGS=$ORIGINAL_HOST_CONFIGURE_FLAGS
      touch zlib-stamp
-@@ -244,13 +257,13 @@ function build_zstd {
+@@ -244,13 +271,13 @@ function build_zstd {
      if [ -e zstd-stamp ]; then return; fi
      local out_dir=$(fetch_unpack https://github.com/facebook/zstd/releases/download/v$ZSTD_VERSION/zstd-$ZSTD_VERSION.tar.gz)
      (cd $out_dir \
@@ -51,7 +65,7 @@ index b3a5782..3fe93ab 100755
          yum remove -y zlib-devel
      fi
      if [[ -n "$IS_MACOS" ]]; then
-@@ -260,7 +273,7 @@ function build {
+@@ -260,7 +287,7 @@ function build {
      fi
  
      build_simple xcb-proto 1.17.0 https://xorg.freedesktop.org/archive/individual/proto
