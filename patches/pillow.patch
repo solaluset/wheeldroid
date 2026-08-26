@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index 8f47b3d..a4e61af 100755
+index 8f47b3d..8ab51f2 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -74,9 +74,9 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
@@ -18,7 +18,7 @@ index 8f47b3d..a4e61af 100755
      local out_dir=$(fetch_unpack https://github.com/facebook/zstd/releases/download/v$ZSTD_VERSION/zstd-$ZSTD_VERSION.tar.gz)
      (cd $out_dir \
 -        && make -j4 install)
-+        && PREFIX=~/.local make -j4 install)
++        && PREFIX="$BUILD_PREFIX" make -j4 install)
      touch zstd-stamp
  }
  
@@ -41,6 +41,15 @@ index 8f47b3d..a4e61af 100755
          build_simple xorgproto 2025.1 https://www.x.org/pub/individual/proto
          build_simple libXau 1.0.12 https://www.x.org/pub/individual/lib
          build_simple libpthread-stubs 0.5 https://xcb.freedesktop.org/dist
+@@ -280,7 +279,7 @@ function build {
+             --disable-webp --disable-libdeflate --disable-zstd
+     else
+         build_zstd
+-        build_tiff
++        CFLAGS="$CFLAGS -fPIC" build_tiff
+     fi
+ 
+     build_libavif
 diff --git a/pyproject.toml b/pyproject.toml
 index a2366e7..15eb343 100644
 --- a/pyproject.toml
