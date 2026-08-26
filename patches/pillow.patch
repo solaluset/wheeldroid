@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index b3a5782..cc10f63 100755
+index b3a5782..c5ba797 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -74,9 +74,21 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
@@ -83,6 +83,15 @@ index b3a5782..cc10f63 100755
          build_simple xorgproto 2025.1 https://www.x.org/pub/individual/proto
          build_simple libXau 1.0.12 https://www.x.org/pub/individual/lib
          build_simple libpthread-stubs 0.5 https://xcb.freedesktop.org/dist
+@@ -319,7 +334,7 @@ function build {
+ }
+ 
+ function create_meson_cross_config {
+-    cat << EOF > $WORKDIR/meson-cross.txt
++    cat << EOF > "$WORKDIR/meson-cross.txt"
+ [binaries]
+ pkg-config = '$BUILD_PREFIX/bin/pkg-config'
+ cmake = '$(which cmake)'
 @@ -334,9 +349,8 @@ c_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
  cpp_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
  
