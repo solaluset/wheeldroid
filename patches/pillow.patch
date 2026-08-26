@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index 8f47b3d..2ae1aea 100755
+index b3a5782..fae574a 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -74,9 +74,21 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
@@ -34,16 +34,17 @@ index 8f47b3d..2ae1aea 100755
  
      HOST_CONFIGURE_FLAGS=$ORIGINAL_HOST_CONFIGURE_FLAGS
      touch zlib-stamp
-@@ -208,6 +220,8 @@ function build_libavif {
+@@ -208,6 +220,9 @@ function build_libavif {
      fi
  
      local out_dir=$(fetch_unpack https://github.com/AOMediaCodec/libavif/archive/refs/tags/v$LIBAVIF_VERSION.tar.gz libavif-$LIBAVIF_VERSION.tar.gz)
 +    sed -i -E "s|--cross-file=\"[^\"]+\"|--cross-file='$WORKDIR/meson-cross.txt'|" "$out_dir/ext/dav1d_android.sh"
 +    echo megabruh
++    cat "$out_dir/ext/dav1d_android.sh"
  
      # CONFIG_AV1_HIGHBITDEPTH=0 is a flag for libaom (included as a subproject
      # of libavif) that disables support for encoding high bit depth images.
-@@ -228,14 +242,14 @@ function build_libavif {
+@@ -228,14 +243,14 @@ function build_libavif {
              "${libavif_cmake_flags[@]}" \
              $HOST_CMAKE_FLAGS . )
  
@@ -61,7 +62,7 @@ index 8f47b3d..2ae1aea 100755
  
      touch libavif-stamp
  }
-@@ -244,13 +258,13 @@ function build_zstd {
+@@ -244,13 +259,13 @@ function build_zstd {
      if [ -e zstd-stamp ]; then return; fi
      local out_dir=$(fetch_unpack https://github.com/facebook/zstd/releases/download/v$ZSTD_VERSION/zstd-$ZSTD_VERSION.tar.gz)
      (cd $out_dir \
@@ -77,7 +78,7 @@ index 8f47b3d..2ae1aea 100755
          yum remove -y zlib-devel
      fi
      if [[ -n "$IS_MACOS" ]]; then
-@@ -260,7 +274,7 @@ function build {
+@@ -260,7 +275,7 @@ function build {
      fi
  
      build_simple xcb-proto 1.17.0 https://xorg.freedesktop.org/archive/individual/proto
@@ -86,7 +87,7 @@ index 8f47b3d..2ae1aea 100755
          build_simple xorgproto 2025.1 https://www.x.org/pub/individual/proto
          build_simple libXau 1.0.12 https://www.x.org/pub/individual/lib
          build_simple libpthread-stubs 0.5 https://xcb.freedesktop.org/dist
-@@ -317,7 +331,7 @@ function build {
+@@ -319,7 +334,7 @@ function build {
  }
  
  function create_meson_cross_config {
@@ -95,7 +96,7 @@ index 8f47b3d..2ae1aea 100755
  [binaries]
  pkg-config = '$BUILD_PREFIX/bin/pkg-config'
  cmake = '$(which cmake)'
-@@ -332,9 +346,8 @@ c_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
+@@ -334,9 +349,8 @@ c_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
  cpp_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
  
  [host_machine]
@@ -107,7 +108,7 @@ index 8f47b3d..2ae1aea 100755
  cpu_family = '$(uname -m)'
  cpu = '$(uname -m)'
  endian = 'little'
-@@ -394,6 +407,8 @@ if [[ -n "$IS_MACOS" ]]; then
+@@ -396,6 +410,8 @@ if [[ -n "$IS_MACOS" ]]; then
      fi
  fi
  
@@ -117,7 +118,7 @@ index 8f47b3d..2ae1aea 100755
  
  # A safety catch for iOS. iOS can't use dynamic libraries, but clang will prefer
 diff --git a/pyproject.toml b/pyproject.toml
-index a2366e7..1b93640 100644
+index 16d82d4..f52b6ab 100644
 --- a/pyproject.toml
 +++ b/pyproject.toml
 @@ -3,6 +3,9 @@ build-backend = "backend"
