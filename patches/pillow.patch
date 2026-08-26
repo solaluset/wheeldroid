@@ -51,7 +51,7 @@ index 8f47b3d..1b0de29 100755
          build_simple libXau 1.0.12 https://www.x.org/pub/individual/lib
          build_simple libpthread-stubs 0.5 https://xcb.freedesktop.org/dist
 diff --git a/pyproject.toml b/pyproject.toml
-index a2366e7..5c0a69f 100644
+index a2366e7..e2bfc11 100644
 --- a/pyproject.toml
 +++ b/pyproject.toml
 @@ -97,7 +97,7 @@ dynamic.version = { attr = "PIL.__version__" }
@@ -59,7 +59,7 @@ index a2366e7..5c0a69f 100644
  build-verbosity = 1
  config-settings = "raqm=enable raqm=vendor fribidi=vendor imagequant=disable"
 -before-all = ".github/workflows/wheels-dependencies.sh"
-+before-build = ".github/workflows/wheels-dependencies.sh"
++before-build = "cd {project} && .github/workflows/wheels-dependencies.sh"
  test-command = "cd {project} && .github/workflows/wheels-test.sh"
  test-requires = [
    "numpy",
