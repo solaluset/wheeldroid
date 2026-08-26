@@ -1,8 +1,8 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index 8f47b3d..85fc6a2 100755
+index 8f47b3d..9342d36 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
-@@ -74,9 +74,14 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
+@@ -74,9 +74,15 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
      WORKDIR=$(pwd)/build/darwin
      BUILD_PREFIX=$(pwd)/build/deps/darwin
  else
@@ -13,12 +13,13 @@ index 8f47b3d..85fc6a2 100755
 +    BUILD_PREFIX=~/.local
 +    HOST_CONFIGURE_FLAGS="--host=aarch64-linux-android24"
 +    export LIBRARY_PATH="$BUILD_PREFIX/lib:${LIBRARY_PATH%:}"
++    export LD_LIBRARY_PATH="$LIBRARY_PATH"
 +    export PKG_CONFIG_PATH="$BUILD_PREFIX/share/pkgconfig:$PKG_CONFIG_PATH"
 +
      MB_ML_LIBC=${AUDITWHEEL_POLICY::9}
      MB_ML_VER=${AUDITWHEEL_POLICY:9}
  fi
-@@ -144,7 +149,7 @@ function build_zlib_ng {
+@@ -144,7 +150,7 @@ function build_zlib_ng {
      ORIGINAL_HOST_CONFIGURE_FLAGS=$HOST_CONFIGURE_FLAGS
      unset HOST_CONFIGURE_FLAGS
  
@@ -27,7 +28,7 @@ index 8f47b3d..85fc6a2 100755
  
      HOST_CONFIGURE_FLAGS=$ORIGINAL_HOST_CONFIGURE_FLAGS
      touch zlib-stamp
-@@ -244,13 +249,13 @@ function build_zstd {
+@@ -244,13 +250,13 @@ function build_zstd {
      if [ -e zstd-stamp ]; then return; fi
      local out_dir=$(fetch_unpack https://github.com/facebook/zstd/releases/download/v$ZSTD_VERSION/zstd-$ZSTD_VERSION.tar.gz)
      (cd $out_dir \
@@ -43,7 +44,7 @@ index 8f47b3d..85fc6a2 100755
          yum remove -y zlib-devel
      fi
      if [[ -n "$IS_MACOS" ]]; then
-@@ -260,7 +265,7 @@ function build {
+@@ -260,7 +266,7 @@ function build {
      fi
  
      build_simple xcb-proto 1.17.0 https://xorg.freedesktop.org/archive/individual/proto
