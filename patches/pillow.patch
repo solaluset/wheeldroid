@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index b3a5782..15cbad9 100755
+index b3a5782..7609ae2 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -74,9 +74,21 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
@@ -34,15 +34,17 @@ index b3a5782..15cbad9 100755
  
      HOST_CONFIGURE_FLAGS=$ORIGINAL_HOST_CONFIGURE_FLAGS
      touch zlib-stamp
-@@ -208,6 +220,7 @@ function build_libavif {
+@@ -208,6 +220,9 @@ function build_libavif {
      fi
  
      local out_dir=$(fetch_unpack https://github.com/AOMediaCodec/libavif/archive/refs/tags/v$LIBAVIF_VERSION.tar.gz libavif-$LIBAVIF_VERSION.tar.gz)
 +    sed -i -E "s|(^meson setup .*)|\1 $HOST_MESON_FLAGS|" "$out_dir/ext/dav1d.cmd"
++    echo megabruh
++    cat "$out_dir/ext/dav1d.cmd"
  
      # CONFIG_AV1_HIGHBITDEPTH=0 is a flag for libaom (included as a subproject
      # of libavif) that disables support for encoding high bit depth images.
-@@ -228,11 +241,11 @@ function build_libavif {
+@@ -228,11 +243,11 @@ function build_libavif {
              "${libavif_cmake_flags[@]}" \
              $HOST_CMAKE_FLAGS . )
  
@@ -56,7 +58,7 @@ index b3a5782..15cbad9 100755
      fi
  
      (cd $out_dir && make -j4 install)
-@@ -244,13 +257,13 @@ function build_zstd {
+@@ -244,13 +259,13 @@ function build_zstd {
      if [ -e zstd-stamp ]; then return; fi
      local out_dir=$(fetch_unpack https://github.com/facebook/zstd/releases/download/v$ZSTD_VERSION/zstd-$ZSTD_VERSION.tar.gz)
      (cd $out_dir \
@@ -72,7 +74,7 @@ index b3a5782..15cbad9 100755
          yum remove -y zlib-devel
      fi
      if [[ -n "$IS_MACOS" ]]; then
-@@ -260,7 +273,7 @@ function build {
+@@ -260,7 +275,7 @@ function build {
      fi
  
      build_simple xcb-proto 1.17.0 https://xorg.freedesktop.org/archive/individual/proto
@@ -81,7 +83,7 @@ index b3a5782..15cbad9 100755
          build_simple xorgproto 2025.1 https://www.x.org/pub/individual/proto
          build_simple libXau 1.0.12 https://www.x.org/pub/individual/lib
          build_simple libpthread-stubs 0.5 https://xcb.freedesktop.org/dist
-@@ -396,6 +409,8 @@ if [[ -n "$IS_MACOS" ]]; then
+@@ -396,6 +411,8 @@ if [[ -n "$IS_MACOS" ]]; then
      fi
  fi
  
