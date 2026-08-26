@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index b3a5782..c5ba797 100755
+index b3a5782..ba89afa 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -74,9 +74,21 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
@@ -38,9 +38,9 @@ index b3a5782..c5ba797 100755
      fi
  
      local out_dir=$(fetch_unpack https://github.com/AOMediaCodec/libavif/archive/refs/tags/v$LIBAVIF_VERSION.tar.gz libavif-$LIBAVIF_VERSION.tar.gz)
-+    sed -i -E "s|(^meson setup .*)|\1 $HOST_MESON_FLAGS|" "$out_dir/ext/dav1d.cmd"
++    sed -i -E "s|(^meson setup .*)|\1; cp '$WORKDIR/meson-cross.txt' '$out_dir/_deps/dav1d-src/package/crossfiles/aarch64-android.meson'|" "$out_dir/ext/dav1d.cmd"
 +    echo megabruh
-+    cat "$out_dir/ext/dav1d.cmd" "$WORKDIR/meson-cross.txt"
++    cat "$out_dir/ext/dav1d.cmd" "$out_dir/_deps/dav1d-src/package/crossfiles/aarch64-android.meson"
  
      # CONFIG_AV1_HIGHBITDEPTH=0 is a flag for libaom (included as a subproject
      # of libavif) that disables support for encoding high bit depth images.
