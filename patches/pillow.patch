@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index b3a5782..14fa97b 100755
+index b3a5782..4225cf5 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -74,9 +74,21 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
@@ -44,7 +44,7 @@ index b3a5782..14fa97b 100755
          # doesn't work for iOS cross-compilation. Copy in Pillow-generated
          # meson-cross config to replace the cmake-generated version.
 -        cp $WORKDIR/meson-cross.txt $out_dir/crossfile-apple.meson
-+        cp $WORKDIR/meson-cross.txt $out_dir/_deps/dav1d-src/package/crossfiles/aarch64-android.meson
++        cp $WORKDIR/meson-cross.txt $out_dir/crossfile-android.meson
      fi
  
      (cd $out_dir && make -j4 install)
