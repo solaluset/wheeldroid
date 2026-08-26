@@ -1,8 +1,8 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index b3a5782..8a2581a 100755
+index b3a5782..b38ac5f 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
-@@ -74,9 +74,10 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
+@@ -74,9 +74,13 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
      WORKDIR=$(pwd)/build/darwin
      BUILD_PREFIX=$(pwd)/build/deps/darwin
  else
@@ -10,11 +10,14 @@ index b3a5782..8a2581a 100755
      PLAT="${CIBW_ARCHS:-$AUDITWHEEL_ARCH}"
      WORKDIR=$(pwd)/build
 +    BUILD_PREFIX=~/.local
-+    export PKG_CONFIG_PATH=~/".local/lib/pkgconfig:$PKG_CONFIG_PATH"
++
++    apt-get download libxau-dev
++    dpkg -x libxau-dev_*.deb ~/.local
++
      MB_ML_LIBC=${AUDITWHEEL_POLICY::9}
      MB_ML_VER=${AUDITWHEEL_POLICY:9}
  fi
-@@ -250,9 +251,6 @@ function build_zstd {
+@@ -250,9 +254,6 @@ function build_zstd {
  
  function build {
      build_xz
