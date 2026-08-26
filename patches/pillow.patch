@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index 8f47b3d..0164fdf 100755
+index 8f47b3d..4fe67f5 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -74,9 +74,11 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
@@ -11,7 +11,7 @@ index 8f47b3d..0164fdf 100755
      WORKDIR=$(pwd)/build
 +    BUILD_PREFIX=~/.local
 +    export CC=aarch64-linux-android24-clang
-+    HOST_CONFIGURE_FLAGS="--host=aarch64-linux-android24"
++    HOST_CONFIGURE_FLAGS="--target=aarch64-linux-android24"
      MB_ML_LIBC=${AUDITWHEEL_POLICY::9}
      MB_ML_VER=${AUDITWHEEL_POLICY:9}
  fi
