@@ -11,9 +11,7 @@ index b3a5782..77ba561 100755
      WORKDIR=$(pwd)/build
 +    BUILD_PREFIX=~/.local
 +
-+    apt-get download libxau-dev:arm64
-+    dpkg -x libxau-dev_*.deb ~/.local
-+    export PKG_CONFIG_PATH=~/".local/usr:$PKG_CONFIG_PATH"
++    sudo apt-get install libxau-dev:arm64
 +
      MB_ML_LIBC=${AUDITWHEEL_POLICY::9}
      MB_ML_VER=${AUDITWHEEL_POLICY:9}
