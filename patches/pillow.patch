@@ -1,8 +1,8 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index b3a5782..77ba561 100755
+index 8f47b3d..ab3c322 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
-@@ -74,9 +74,14 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
+@@ -74,9 +74,12 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
      WORKDIR=$(pwd)/build/darwin
      BUILD_PREFIX=$(pwd)/build/deps/darwin
  else
@@ -16,7 +16,7 @@ index b3a5782..77ba561 100755
      MB_ML_LIBC=${AUDITWHEEL_POLICY::9}
      MB_ML_VER=${AUDITWHEEL_POLICY:9}
  fi
-@@ -250,9 +255,6 @@ function build_zstd {
+@@ -250,9 +253,6 @@ function build_zstd {
  
  function build {
      build_xz
@@ -27,7 +27,7 @@ index b3a5782..77ba561 100755
          CFLAGS="$CFLAGS -headerpad_max_install_names" build_zlib_ng
      else
 diff --git a/pyproject.toml b/pyproject.toml
-index 16d82d4..f4820fd 100644
+index a2366e7..15eb343 100644
 --- a/pyproject.toml
 +++ b/pyproject.toml
 @@ -97,7 +97,7 @@ dynamic.version = { attr = "PIL.__version__" }
