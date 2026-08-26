@@ -1,8 +1,8 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index 8f47b3d..762dd6d 100755
+index 8f47b3d..dd0c91b 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
-@@ -74,9 +74,9 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
+@@ -74,9 +74,10 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
      WORKDIR=$(pwd)/build/darwin
      BUILD_PREFIX=$(pwd)/build/deps/darwin
  else
@@ -10,10 +10,11 @@ index 8f47b3d..762dd6d 100755
      PLAT="${CIBW_ARCHS:-$AUDITWHEEL_ARCH}"
      WORKDIR=$(pwd)/build
 +    BUILD_PREFIX=~/.local
++    export HOST=aarch64-linux-android24
      MB_ML_LIBC=${AUDITWHEEL_POLICY::9}
      MB_ML_VER=${AUDITWHEEL_POLICY:9}
  fi
-@@ -144,7 +144,7 @@ function build_zlib_ng {
+@@ -144,7 +145,7 @@ function build_zlib_ng {
      ORIGINAL_HOST_CONFIGURE_FLAGS=$HOST_CONFIGURE_FLAGS
      unset HOST_CONFIGURE_FLAGS
  
@@ -22,7 +23,7 @@ index 8f47b3d..762dd6d 100755
  
      HOST_CONFIGURE_FLAGS=$ORIGINAL_HOST_CONFIGURE_FLAGS
      touch zlib-stamp
-@@ -244,13 +244,13 @@ function build_zstd {
+@@ -244,13 +245,13 @@ function build_zstd {
      if [ -e zstd-stamp ]; then return; fi
      local out_dir=$(fetch_unpack https://github.com/facebook/zstd/releases/download/v$ZSTD_VERSION/zstd-$ZSTD_VERSION.tar.gz)
      (cd $out_dir \
@@ -38,7 +39,7 @@ index 8f47b3d..762dd6d 100755
          yum remove -y zlib-devel
      fi
      if [[ -n "$IS_MACOS" ]]; then
-@@ -260,7 +260,9 @@ function build {
+@@ -260,7 +261,9 @@ function build {
      fi
  
      build_simple xcb-proto 1.17.0 https://xorg.freedesktop.org/archive/individual/proto
@@ -49,15 +50,6 @@ index 8f47b3d..762dd6d 100755
          build_simple xorgproto 2025.1 https://www.x.org/pub/individual/proto
          build_simple libXau 1.0.12 https://www.x.org/pub/individual/lib
          build_simple libpthread-stubs 0.5 https://xcb.freedesktop.org/dist
-@@ -270,7 +272,7 @@ function build {
-     build_simple libxcb $LIBXCB_VERSION https://www.x.org/releases/individual/lib
- 
-     build_libjpeg_turbo
--    if [[ -n "$IS_MACOS" ]]; then
-+    if true; then
-         # Custom tiff build to include jpeg; by default, configure won't include
-         # headers/libs in the custom macOS/iOS prefix. Explicitly disable webp,
-         # libdeflate and zstd, because on x86_64 macs, it will pick up the
 diff --git a/pyproject.toml b/pyproject.toml
 index a2366e7..15eb343 100644
 --- a/pyproject.toml
