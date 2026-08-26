@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index 8f47b3d..5bb4aae 100755
+index 8f47b3d..1b0de29 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -74,9 +74,10 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
@@ -10,7 +10,7 @@ index 8f47b3d..5bb4aae 100755
      PLAT="${CIBW_ARCHS:-$AUDITWHEEL_ARCH}"
      WORKDIR=$(pwd)/build
 +    BUILD_PREFIX=~/.local
-+    HOST_CONFIGURE_FLAGS="--arch=aarch64 --target-os=android"
++    # HOST_CONFIGURE_FLAGS="--arch=aarch64 --target-os=android"
      MB_ML_LIBC=${AUDITWHEEL_POLICY::9}
      MB_ML_VER=${AUDITWHEEL_POLICY:9}
  fi
@@ -51,7 +51,7 @@ index 8f47b3d..5bb4aae 100755
          build_simple libXau 1.0.12 https://www.x.org/pub/individual/lib
          build_simple libpthread-stubs 0.5 https://xcb.freedesktop.org/dist
 diff --git a/pyproject.toml b/pyproject.toml
-index a2366e7..15eb343 100644
+index a2366e7..5c0a69f 100644
 --- a/pyproject.toml
 +++ b/pyproject.toml
 @@ -97,7 +97,7 @@ dynamic.version = { attr = "PIL.__version__" }
@@ -59,7 +59,7 @@ index a2366e7..15eb343 100644
  build-verbosity = 1
  config-settings = "raqm=enable raqm=vendor fribidi=vendor imagequant=disable"
 -before-all = ".github/workflows/wheels-dependencies.sh"
-+before-all = "cd build/pillow && .github/workflows/wheels-dependencies.sh"
++before-build = ".github/workflows/wheels-dependencies.sh"
  test-command = "cd {project} && .github/workflows/wheels-test.sh"
  test-requires = [
    "numpy",
