@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index b3a5782..ae164c0 100755
+index b3a5782..cc10f63 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -74,9 +74,21 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
@@ -83,7 +83,19 @@ index b3a5782..ae164c0 100755
          build_simple xorgproto 2025.1 https://www.x.org/pub/individual/proto
          build_simple libXau 1.0.12 https://www.x.org/pub/individual/lib
          build_simple libpthread-stubs 0.5 https://xcb.freedesktop.org/dist
-@@ -396,6 +411,8 @@ if [[ -n "$IS_MACOS" ]]; then
+@@ -334,9 +349,8 @@ c_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
+ cpp_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
+ 
+ [host_machine]
+-system = 'darwin'
+-subsystem = 'ios'
+-kernel = 'xnu'
++system = 'linux'
++subsystem = 'linux'
+ cpu_family = '$(uname -m)'
+ cpu = '$(uname -m)'
+ endian = 'little'
+@@ -396,6 +410,8 @@ if [[ -n "$IS_MACOS" ]]; then
      fi
  fi
  
