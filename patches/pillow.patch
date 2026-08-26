@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index b3a5782..8bfa902 100755
+index 8f47b3d..18fed69 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -74,9 +74,21 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
@@ -43,12 +43,11 @@ index b3a5782..8bfa902 100755
  
      # CONFIG_AV1_HIGHBITDEPTH=0 is a flag for libaom (included as a subproject
      # of libavif) that disables support for encoding high bit depth images.
-@@ -228,11 +242,12 @@ function build_libavif {
+@@ -228,11 +242,11 @@ function build_libavif {
              "${libavif_cmake_flags[@]}" \
              $HOST_CMAKE_FLAGS . )
  
 -    if [[ -n "$IOS_SDK" ]]; then
-+    cat "$out_dir/ext/dav1d.cmd" "$out_dir/_deps/dav1d-src/package/crossfiles/aarch64-android.meson"
 +    if true; then
          # libavif's CMake configuration generates a meson cross file... but it
          # doesn't work for iOS cross-compilation. Copy in Pillow-generated
@@ -58,7 +57,7 @@ index b3a5782..8bfa902 100755
      fi
  
      (cd $out_dir && make -j4 install)
-@@ -244,13 +259,13 @@ function build_zstd {
+@@ -244,13 +258,13 @@ function build_zstd {
      if [ -e zstd-stamp ]; then return; fi
      local out_dir=$(fetch_unpack https://github.com/facebook/zstd/releases/download/v$ZSTD_VERSION/zstd-$ZSTD_VERSION.tar.gz)
      (cd $out_dir \
@@ -74,7 +73,7 @@ index b3a5782..8bfa902 100755
          yum remove -y zlib-devel
      fi
      if [[ -n "$IS_MACOS" ]]; then
-@@ -260,7 +275,7 @@ function build {
+@@ -260,7 +274,7 @@ function build {
      fi
  
      build_simple xcb-proto 1.17.0 https://xorg.freedesktop.org/archive/individual/proto
@@ -83,7 +82,7 @@ index b3a5782..8bfa902 100755
          build_simple xorgproto 2025.1 https://www.x.org/pub/individual/proto
          build_simple libXau 1.0.12 https://www.x.org/pub/individual/lib
          build_simple libpthread-stubs 0.5 https://xcb.freedesktop.org/dist
-@@ -319,7 +334,7 @@ function build {
+@@ -317,7 +331,7 @@ function build {
  }
  
  function create_meson_cross_config {
@@ -92,7 +91,7 @@ index b3a5782..8bfa902 100755
  [binaries]
  pkg-config = '$BUILD_PREFIX/bin/pkg-config'
  cmake = '$(which cmake)'
-@@ -334,9 +349,8 @@ c_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
+@@ -332,9 +346,8 @@ c_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
  cpp_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
  
  [host_machine]
@@ -104,7 +103,7 @@ index b3a5782..8bfa902 100755
  cpu_family = '$(uname -m)'
  cpu = '$(uname -m)'
  endian = 'little'
-@@ -396,6 +410,8 @@ if [[ -n "$IS_MACOS" ]]; then
+@@ -394,6 +407,8 @@ if [[ -n "$IS_MACOS" ]]; then
      fi
  fi
  
@@ -114,7 +113,7 @@ index b3a5782..8bfa902 100755
  
  # A safety catch for iOS. iOS can't use dynamic libraries, but clang will prefer
 diff --git a/pyproject.toml b/pyproject.toml
-index 16d82d4..f52b6ab 100644
+index a2366e7..1b93640 100644
 --- a/pyproject.toml
 +++ b/pyproject.toml
 @@ -3,6 +3,9 @@ build-backend = "backend"
