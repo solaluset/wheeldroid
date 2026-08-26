@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index b3a5782..b38ac5f 100755
+index b3a5782..cf60649 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -74,9 +74,13 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
@@ -11,7 +11,7 @@ index b3a5782..b38ac5f 100755
      WORKDIR=$(pwd)/build
 +    BUILD_PREFIX=~/.local
 +
-+    apt-get download libxau-dev
++    apt-get download libxau-dev:arm64
 +    dpkg -x libxau-dev_*.deb ~/.local
 +
      MB_ML_LIBC=${AUDITWHEEL_POLICY::9}
