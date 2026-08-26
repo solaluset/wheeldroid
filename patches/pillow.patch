@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index 8f47b3d..18fed69 100755
+index 8f47b3d..f778e8c 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -74,9 +74,21 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
@@ -38,7 +38,7 @@ index 8f47b3d..18fed69 100755
      fi
  
      local out_dir=$(fetch_unpack https://github.com/AOMediaCodec/libavif/archive/refs/tags/v$LIBAVIF_VERSION.tar.gz libavif-$LIBAVIF_VERSION.tar.gz)
-+    sed -i -E "s|(^meson setup .*)|\1; cp '$WORKDIR/meson-cross.txt' '$out_dir/_deps/dav1d-src/package/crossfiles/aarch64-android.meson'|" "$out_dir/ext/dav1d.cmd"
++    sed -i -E "s|(^meson setup .*)|cp '$WORKDIR/meson-cross.txt' '$out_dir/_deps/dav1d-src/package/crossfiles/aarch64-android.meson'; \1|" "$out_dir/ext/dav1d.cmd"
 +    echo megabruh
  
      # CONFIG_AV1_HIGHBITDEPTH=0 is a flag for libaom (included as a subproject
