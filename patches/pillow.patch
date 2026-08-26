@@ -55,19 +55,20 @@ index 8f47b3d..9a3a9ca 100755
          build_simple libXau 1.0.12 https://www.x.org/pub/individual/lib
          build_simple libpthread-stubs 0.5 https://xcb.freedesktop.org/dist
 diff --git a/pyproject.toml b/pyproject.toml
-index a2366e7..7a561d6 100644
+index a2366e7..1b93640 100644
 --- a/pyproject.toml
 +++ b/pyproject.toml
-@@ -3,6 +3,8 @@ build-backend = "backend"
+@@ -3,6 +3,9 @@ build-backend = "backend"
  requires = [
    "pybind11",
    "setuptools>=77",
 +  "pip",
 +  "meson",
++  "ninja",
  ]
  backend-path = [
    "_custom_build",
-@@ -97,7 +99,7 @@ dynamic.version = { attr = "PIL.__version__" }
+@@ -97,7 +100,7 @@ dynamic.version = { attr = "PIL.__version__" }
  [tool.cibuildwheel]
  build-verbosity = 1
  config-settings = "raqm=enable raqm=vendor fribidi=vendor imagequant=disable"
