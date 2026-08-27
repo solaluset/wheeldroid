@@ -130,7 +130,7 @@ index a2366e717..1b93640f5 100644
  test-requires = [
    "numpy",
 diff --git a/setup.py b/setup.py
-index f015a03ac..1b36625cc 100644
+index f015a03ac..fed6e4b9a 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -709,6 +709,11 @@ class pil_build_ext(build_ext):
@@ -145,6 +145,15 @@ index f015a03ac..1b36625cc 100644
          self.compiler.library_dirs = library_dirs + self.compiler.library_dirs
          self.compiler.include_dirs = include_dirs + self.compiler.include_dirs
  
+@@ -905,7 +910,7 @@ class pil_build_ext(build_ext):
+                 # so we have to guess; by default it is defined in all Windows builds.
+                 # See #4237, #5243, #5359 for more information.
+                 defs.append(("USE_WIN32_FILEIO", None))
+-            elif sys.platform == "ios":
++            elif True:
+                 # Ensure transitive dependencies are linked.
+                 libs.append("lzma")
+         if feature.get("jpeg"):
 @@ -924,7 +929,7 @@ class pil_build_ext(build_ext):
              defs.append(("HAVE_LIBIMAGEQUANT", None))
          if feature.get("xcb"):
@@ -154,3 +163,21 @@ index f015a03ac..1b36625cc 100644
                  # Ensure transitive dependencies are linked.
                  libs.append("Xau")
              defs.append(("HAVE_XCB", None))
+@@ -959,7 +964,7 @@ class pil_build_ext(build_ext):
+                     else:  # building FriBiDi shim from src/thirdparty
+                         srcs.append("src/thirdparty/fribidi-shim/fribidi.c")
+ 
+-            if sys.platform == "ios":
++            if True:
+                 # Ensure transitive dependencies are linked.
+                 libs.extend(["z", "bz2", "brotlicommon", "brotlidec", "png"])
+ 
+@@ -979,7 +984,7 @@ class pil_build_ext(build_ext):
+         webp = feature.get("webp")
+         if isinstance(webp, str):
+             libs = [webp, webp + "mux", webp + "demux"]
+-            if sys.platform == "ios":
++            if True:
+                 # Ensure transitive dependencies are linked.
+                 libs.append("sharpyuv")
+             self._update_extension("PIL._webp", libs)
