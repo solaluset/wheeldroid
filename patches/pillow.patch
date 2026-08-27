@@ -1,8 +1,8 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index 8f47b3dea..3d56fbb77 100755
+index 8f47b3dea..74ab8b2e9 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
-@@ -74,9 +74,22 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
+@@ -74,9 +74,23 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
      WORKDIR=$(pwd)/build/darwin
      BUILD_PREFIX=$(pwd)/build/deps/darwin
  else
@@ -22,11 +22,12 @@ index 8f47b3dea..3d56fbb77 100755
 +    git clone --depth 1 --branch v0.11.0 https://github.com/google/cpu_features.git build/cpu_features
 +    sudo mkdir -p /sources/android
 +    sudo ln -s "$(pwd)/build/cpu_features/ndk_compat" /sources/android/cpufeatures
++    export CFLAGS="$CFLAGS -I$(pwd)/build/cpu_features/include"
 +
      MB_ML_LIBC=${AUDITWHEEL_POLICY::9}
      MB_ML_VER=${AUDITWHEEL_POLICY:9}
  fi
-@@ -144,7 +157,7 @@ function build_zlib_ng {
+@@ -144,7 +158,7 @@ function build_zlib_ng {
      ORIGINAL_HOST_CONFIGURE_FLAGS=$HOST_CONFIGURE_FLAGS
      unset HOST_CONFIGURE_FLAGS
  
@@ -35,7 +36,7 @@ index 8f47b3dea..3d56fbb77 100755
  
      HOST_CONFIGURE_FLAGS=$ORIGINAL_HOST_CONFIGURE_FLAGS
      touch zlib-stamp
-@@ -175,6 +188,9 @@ function build_libavif {
+@@ -175,6 +189,9 @@ function build_libavif {
      if [ -e libavif-stamp ]; then return; fi
  
      python3 -m pip install meson ninja
@@ -45,7 +46,7 @@ index 8f47b3dea..3d56fbb77 100755
  
      if ([[ "$PLAT" == "x86_64" ]] && [[ -z "$IOS_SDK" ]]) || [ -n "$SANITIZER" ]; then
          build_simple nasm 2.16.03 https://www.nasm.us/pub/nasm/releasebuilds/2.16.03
-@@ -208,6 +224,14 @@ function build_libavif {
+@@ -208,6 +225,14 @@ function build_libavif {
      fi
  
      local out_dir=$(fetch_unpack https://github.com/AOMediaCodec/libavif/archive/refs/tags/v$LIBAVIF_VERSION.tar.gz libavif-$LIBAVIF_VERSION.tar.gz)
@@ -60,7 +61,7 @@ index 8f47b3dea..3d56fbb77 100755
  
      # CONFIG_AV1_HIGHBITDEPTH=0 is a flag for libaom (included as a subproject
      # of libavif) that disables support for encoding high bit depth images.
-@@ -228,14 +252,14 @@ function build_libavif {
+@@ -228,14 +253,14 @@ function build_libavif {
              "${libavif_cmake_flags[@]}" \
              $HOST_CMAKE_FLAGS . )
  
@@ -78,7 +79,7 @@ index 8f47b3dea..3d56fbb77 100755
  
      touch libavif-stamp
  }
-@@ -244,13 +268,13 @@ function build_zstd {
+@@ -244,13 +269,13 @@ function build_zstd {
      if [ -e zstd-stamp ]; then return; fi
      local out_dir=$(fetch_unpack https://github.com/facebook/zstd/releases/download/v$ZSTD_VERSION/zstd-$ZSTD_VERSION.tar.gz)
      (cd $out_dir \
@@ -94,7 +95,7 @@ index 8f47b3dea..3d56fbb77 100755
          yum remove -y zlib-devel
      fi
      if [[ -n "$IS_MACOS" ]]; then
-@@ -260,7 +284,7 @@ function build {
+@@ -260,7 +285,7 @@ function build {
      fi
  
      build_simple xcb-proto 1.17.0 https://xorg.freedesktop.org/archive/individual/proto
@@ -103,7 +104,7 @@ index 8f47b3dea..3d56fbb77 100755
          build_simple xorgproto 2025.1 https://www.x.org/pub/individual/proto
          build_simple libXau 1.0.12 https://www.x.org/pub/individual/lib
          build_simple libpthread-stubs 0.5 https://xcb.freedesktop.org/dist
-@@ -317,7 +341,7 @@ function build {
+@@ -317,7 +342,7 @@ function build {
  }
  
  function create_meson_cross_config {
@@ -112,7 +113,7 @@ index 8f47b3dea..3d56fbb77 100755
  [binaries]
  pkg-config = '$BUILD_PREFIX/bin/pkg-config'
  cmake = '$(which cmake)'
-@@ -332,9 +356,8 @@ c_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
+@@ -332,9 +357,8 @@ c_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
  cpp_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
  
  [host_machine]
@@ -124,7 +125,7 @@ index 8f47b3dea..3d56fbb77 100755
  cpu_family = '$(uname -m)'
  cpu = '$(uname -m)'
  endian = 'little'
-@@ -394,6 +417,8 @@ if [[ -n "$IS_MACOS" ]]; then
+@@ -394,6 +418,8 @@ if [[ -n "$IS_MACOS" ]]; then
      fi
  fi
  
