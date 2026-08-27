@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index 8f47b3dea..74ab8b2e9 100755
+index 8f47b3dea..16d2d24a3 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -74,9 +74,23 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
@@ -36,32 +36,7 @@ index 8f47b3dea..74ab8b2e9 100755
  
      HOST_CONFIGURE_FLAGS=$ORIGINAL_HOST_CONFIGURE_FLAGS
      touch zlib-stamp
-@@ -175,6 +189,9 @@ function build_libavif {
-     if [ -e libavif-stamp ]; then return; fi
- 
-     python3 -m pip install meson ninja
-+    #ln -s "$CC" "$(dirname "$CC")/aarch64-linux-android21-clang"
-+    echo megabruh
-+    #readlink /usr/local/bin/aarch64-linux-android21-clang
- 
-     if ([[ "$PLAT" == "x86_64" ]] && [[ -z "$IOS_SDK" ]]) || [ -n "$SANITIZER" ]; then
-         build_simple nasm 2.16.03 https://www.nasm.us/pub/nasm/releasebuilds/2.16.03
-@@ -208,6 +225,14 @@ function build_libavif {
-     fi
- 
-     local out_dir=$(fetch_unpack https://github.com/AOMediaCodec/libavif/archive/refs/tags/v$LIBAVIF_VERSION.tar.gz libavif-$LIBAVIF_VERSION.tar.gz)
-+    sed -i -E "s|--cross-file=\"[^\"]+\"|--cross-file='$WORKDIR/meson-cross.txt'|" "$out_dir/ext/dav1d_android.sh"
-+    (
-+        head -1 "$out_dir/ext/dav1d_android.sh" \
-+        && echo "cp '$WORKDIR/meson-cross.txt' '../../package/crossfiles/aarch64-android.meson'" \
-+        && tail +2 "$out_dir/ext/dav1d_android.sh"
-+    ) > patched.tmp
-+    mv patched.tmp "$out_dir/ext/dav1d_android.sh"
-+    cat "$out_dir/ext/dav1d_android.sh"
- 
-     # CONFIG_AV1_HIGHBITDEPTH=0 is a flag for libaom (included as a subproject
-     # of libavif) that disables support for encoding high bit depth images.
-@@ -228,14 +253,14 @@ function build_libavif {
+@@ -228,14 +242,14 @@ function build_libavif {
              "${libavif_cmake_flags[@]}" \
              $HOST_CMAKE_FLAGS . )
  
@@ -79,7 +54,7 @@ index 8f47b3dea..74ab8b2e9 100755
  
      touch libavif-stamp
  }
-@@ -244,13 +269,13 @@ function build_zstd {
+@@ -244,13 +258,13 @@ function build_zstd {
      if [ -e zstd-stamp ]; then return; fi
      local out_dir=$(fetch_unpack https://github.com/facebook/zstd/releases/download/v$ZSTD_VERSION/zstd-$ZSTD_VERSION.tar.gz)
      (cd $out_dir \
@@ -95,7 +70,7 @@ index 8f47b3dea..74ab8b2e9 100755
          yum remove -y zlib-devel
      fi
      if [[ -n "$IS_MACOS" ]]; then
-@@ -260,7 +285,7 @@ function build {
+@@ -260,7 +274,7 @@ function build {
      fi
  
      build_simple xcb-proto 1.17.0 https://xorg.freedesktop.org/archive/individual/proto
@@ -104,7 +79,7 @@ index 8f47b3dea..74ab8b2e9 100755
          build_simple xorgproto 2025.1 https://www.x.org/pub/individual/proto
          build_simple libXau 1.0.12 https://www.x.org/pub/individual/lib
          build_simple libpthread-stubs 0.5 https://xcb.freedesktop.org/dist
-@@ -317,7 +342,7 @@ function build {
+@@ -317,7 +331,7 @@ function build {
  }
  
  function create_meson_cross_config {
@@ -113,7 +88,7 @@ index 8f47b3dea..74ab8b2e9 100755
  [binaries]
  pkg-config = '$BUILD_PREFIX/bin/pkg-config'
  cmake = '$(which cmake)'
-@@ -332,9 +357,8 @@ c_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
+@@ -332,9 +346,8 @@ c_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
  cpp_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
  
  [host_machine]
@@ -125,7 +100,7 @@ index 8f47b3dea..74ab8b2e9 100755
  cpu_family = '$(uname -m)'
  cpu = '$(uname -m)'
  endian = 'little'
-@@ -394,6 +418,8 @@ if [[ -n "$IS_MACOS" ]]; then
+@@ -394,6 +407,8 @@ if [[ -n "$IS_MACOS" ]]; then
      fi
  fi
  
