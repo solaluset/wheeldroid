@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index 8f47b3d..5e037bb 100755
+index 8f47b3d..eac6421 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -1,5 +1,7 @@
@@ -32,9 +32,9 @@ index 8f47b3d..5e037bb 100755
 +    sudo ln -s "$(pwd)/build/cpu_features/ndk_compat" /sources/android/cpufeatures
 +    export CFLAGS="$CFLAGS -I$(pwd)/build/cpu_features/include -DSTACK_LINE_READER_BUFFER_SIZE=1024"
 +
-+    sudo dpkg --add-architecture arm64
-+    sudo apt-get update
-+    sudo apt-get install glibc-headers:arm64
++    # sudo dpkg --add-architecture arm64
++    # sudo apt-get update
++    # sudo apt-get install glibc-headers:arm64
 +
      MB_ML_LIBC=${AUDITWHEEL_POLICY::9}
      MB_ML_VER=${AUDITWHEEL_POLICY:9}
@@ -102,10 +102,12 @@ index 8f47b3d..5e037bb 100755
  cpu_family = '$(uname -m)'
  cpu = '$(uname -m)'
  endian = 'little'
-@@ -394,6 +414,10 @@ if [[ -n "$IS_MACOS" ]]; then
+@@ -394,6 +414,12 @@ if [[ -n "$IS_MACOS" ]]; then
      fi
  fi
  
++mkdir -p "$BUILD_PREFIX/include/bits"
++echo "#define __WORDSIZE 32" > "$BUILD_PREFIX/include/bits/wordsize.h"
 +create_meson_cross_config
 +echo megabruh
 +cat '/home/runner/work/wheeldroid/wheeldroid/build/pillow/build/meson-cross.txt'
