@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index b3a5782..01d0544 100755
+index b3a5782..8fb8925 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -74,9 +74,21 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
@@ -34,18 +34,23 @@ index b3a5782..01d0544 100755
  
      HOST_CONFIGURE_FLAGS=$ORIGINAL_HOST_CONFIGURE_FLAGS
      touch zlib-stamp
-@@ -208,6 +220,10 @@ function build_libavif {
+@@ -208,6 +220,15 @@ function build_libavif {
      fi
  
      local out_dir=$(fetch_unpack https://github.com/AOMediaCodec/libavif/archive/refs/tags/v$LIBAVIF_VERSION.tar.gz libavif-$LIBAVIF_VERSION.tar.gz)
 +    sed -i -E "s|--cross-file=\"[^\"]+\"|--cross-file='$WORKDIR/meson-cross.txt'|" "$out_dir/ext/dav1d_android.sh"
 +    echo megabruh
++    (
++        head -1 "$out_dir/ext/dav1d_android.sh" \
++        && echo "cp '$WORKDIR/meson-cross.txt' '../../package/crossfiles/aarch64-android.meson'" \
++        && tail +2 "$out_dir/ext/dav1d_android.sh"
++    ) > patched.tmp
++    mv patched.tmp "$out_dir/ext/dav1d_android.sh"
 +    cat "$out_dir/ext/dav1d_android.sh"
-+    cp "$WORKDIR/meson-cross.txt" "$out_dir/package/crossfiles/aarch64-android.meson"
  
      # CONFIG_AV1_HIGHBITDEPTH=0 is a flag for libaom (included as a subproject
      # of libavif) that disables support for encoding high bit depth images.
-@@ -228,14 +244,14 @@ function build_libavif {
+@@ -228,14 +249,14 @@ function build_libavif {
              "${libavif_cmake_flags[@]}" \
              $HOST_CMAKE_FLAGS . )
  
@@ -63,7 +68,7 @@ index b3a5782..01d0544 100755
  
      touch libavif-stamp
  }
-@@ -244,13 +260,13 @@ function build_zstd {
+@@ -244,13 +265,13 @@ function build_zstd {
      if [ -e zstd-stamp ]; then return; fi
      local out_dir=$(fetch_unpack https://github.com/facebook/zstd/releases/download/v$ZSTD_VERSION/zstd-$ZSTD_VERSION.tar.gz)
      (cd $out_dir \
@@ -79,7 +84,7 @@ index b3a5782..01d0544 100755
          yum remove -y zlib-devel
      fi
      if [[ -n "$IS_MACOS" ]]; then
-@@ -260,7 +276,7 @@ function build {
+@@ -260,7 +281,7 @@ function build {
      fi
  
      build_simple xcb-proto 1.17.0 https://xorg.freedesktop.org/archive/individual/proto
@@ -88,7 +93,7 @@ index b3a5782..01d0544 100755
          build_simple xorgproto 2025.1 https://www.x.org/pub/individual/proto
          build_simple libXau 1.0.12 https://www.x.org/pub/individual/lib
          build_simple libpthread-stubs 0.5 https://xcb.freedesktop.org/dist
-@@ -319,7 +335,7 @@ function build {
+@@ -319,7 +340,7 @@ function build {
  }
  
  function create_meson_cross_config {
@@ -97,7 +102,7 @@ index b3a5782..01d0544 100755
  [binaries]
  pkg-config = '$BUILD_PREFIX/bin/pkg-config'
  cmake = '$(which cmake)'
-@@ -334,9 +350,8 @@ c_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
+@@ -334,9 +355,8 @@ c_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
  cpp_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
  
  [host_machine]
@@ -109,7 +114,7 @@ index b3a5782..01d0544 100755
  cpu_family = '$(uname -m)'
  cpu = '$(uname -m)'
  endian = 'little'
-@@ -396,6 +411,8 @@ if [[ -n "$IS_MACOS" ]]; then
+@@ -396,6 +416,8 @@ if [[ -n "$IS_MACOS" ]]; then
      fi
  fi
  
