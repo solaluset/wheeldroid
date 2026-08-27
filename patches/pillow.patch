@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index 8f47b3dea..4c3e9f19d 100755
+index 8f47b3dea..6ac603066 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -74,9 +74,23 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
@@ -36,24 +36,6 @@ index 8f47b3dea..4c3e9f19d 100755
  
      HOST_CONFIGURE_FLAGS=$ORIGINAL_HOST_CONFIGURE_FLAGS
      touch zlib-stamp
-@@ -228,14 +242,14 @@ function build_libavif {
-             "${libavif_cmake_flags[@]}" \
-             $HOST_CMAKE_FLAGS . )
- 
--    if [[ -n "$IOS_SDK" ]]; then
-+    if true; then
-         # libavif's CMake configuration generates a meson cross file... but it
-         # doesn't work for iOS cross-compilation. Copy in Pillow-generated
-         # meson-cross config to replace the cmake-generated version.
--        cp $WORKDIR/meson-cross.txt $out_dir/crossfile-apple.meson
-+        cp $WORKDIR/meson-cross.txt $out_dir/crossfile-android.meson
-     fi
- 
--    (cd $out_dir && make -j4 install)
-+    (cd $out_dir && make -j4 install) || cat ~/test1
- 
-     touch libavif-stamp
- }
 @@ -244,13 +258,13 @@ function build_zstd {
      if [ -e zstd-stamp ]; then return; fi
      local out_dir=$(fetch_unpack https://github.com/facebook/zstd/releases/download/v$ZSTD_VERSION/zstd-$ZSTD_VERSION.tar.gz)
