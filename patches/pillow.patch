@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index 8f47b3d..eac6421 100755
+index 8f47b3d..598db61 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -1,5 +1,7 @@
@@ -106,8 +106,8 @@ index 8f47b3d..eac6421 100755
      fi
  fi
  
-+mkdir -p "$BUILD_PREFIX/include/bits"
-+echo "#define __WORDSIZE 32" > "$BUILD_PREFIX/include/bits/wordsize.h"
++# mkdir -p "$BUILD_PREFIX/include/bits"
++# echo "#define __WORDSIZE 32" > "$BUILD_PREFIX/include/bits/wordsize.h"
 +create_meson_cross_config
 +echo megabruh
 +cat '/home/runner/work/wheeldroid/wheeldroid/build/pillow/build/meson-cross.txt'
@@ -139,16 +139,17 @@ index a2366e7..1b93640 100644
  test-requires = [
    "numpy",
 diff --git a/setup.py b/setup.py
-index f015a03..8d41a1e 100644
+index f015a03..54b989a 100644
 --- a/setup.py
 +++ b/setup.py
-@@ -709,6 +709,10 @@ class pil_build_ext(build_ext):
+@@ -709,6 +709,11 @@ class pil_build_ext(build_ext):
          # insert new dirs *before* default libs, to avoid conflicts
          # between Python PYD stub libs and real libraries
  
 +        _dir = os.path.join(os.environ["GITHUB_WORKSPACE"], "deps-prefix")
 +        _add_directory(library_dirs, os.path.join(_dir, "lib"))
 +        _add_directory(include_dirs, os.path.join(_dir, "include"))
++        _add_directory(include_dirs, os.path.join(os.path.dirname(os.path.dirname(os.environ["CC"])), "include"))
 +
          self.compiler.library_dirs = library_dirs + self.compiler.library_dirs
          self.compiler.include_dirs = include_dirs + self.compiler.include_dirs
