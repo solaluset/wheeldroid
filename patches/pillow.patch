@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index 8f47b3dea..16d2d24a3 100755
+index 8f47b3dea..4c3e9f19d 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -74,9 +74,23 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
@@ -22,7 +22,7 @@ index 8f47b3dea..16d2d24a3 100755
 +    git clone --depth 1 --branch v0.11.0 https://github.com/google/cpu_features.git build/cpu_features
 +    sudo mkdir -p /sources/android
 +    sudo ln -s "$(pwd)/build/cpu_features/ndk_compat" /sources/android/cpufeatures
-+    export CFLAGS="$CFLAGS -I$(pwd)/build/cpu_features/include"
++    export CFLAGS="$CFLAGS -I$(pwd)/build/cpu_features/include -DSTACK_LINE_READER_BUFFER_SIZE=1024"
 +
      MB_ML_LIBC=${AUDITWHEEL_POLICY::9}
      MB_ML_VER=${AUDITWHEEL_POLICY:9}
