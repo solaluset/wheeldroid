@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index 8f47b3dea..7cfb835ec 100755
+index 8f47b3dea..e78a7c424 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -74,9 +74,26 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
@@ -30,16 +30,7 @@ index 8f47b3dea..7cfb835ec 100755
      MB_ML_LIBC=${AUDITWHEEL_POLICY::9}
      MB_ML_VER=${AUDITWHEEL_POLICY:9}
  fi
-@@ -122,6 +139,8 @@ function build_pkg_config {
-         unset IPHONEOS_DEPLOYMENT_TARGET
-     fi
- 
-+    local BUILD_PREFIX=~/.local
-+
-     CFLAGS="$CFLAGS -Wno-int-conversion" CPPFLAGS="" build_simple pkg-config 0.29.2 https://pkg-config.freedesktop.org/releases tar.gz \
-         --disable-debug --disable-host-tool --with-internal-glib \
-         --with-pc-path=$BUILD_PREFIX/share/pkgconfig:$BUILD_PREFIX/lib/pkgconfig \
-@@ -144,7 +163,7 @@ function build_zlib_ng {
+@@ -144,7 +161,7 @@ function build_zlib_ng {
      ORIGINAL_HOST_CONFIGURE_FLAGS=$HOST_CONFIGURE_FLAGS
      unset HOST_CONFIGURE_FLAGS
  
@@ -48,7 +39,7 @@ index 8f47b3dea..7cfb835ec 100755
  
      HOST_CONFIGURE_FLAGS=$ORIGINAL_HOST_CONFIGURE_FLAGS
      touch zlib-stamp
-@@ -163,6 +182,9 @@ function build_harfbuzz {
+@@ -163,6 +180,9 @@ function build_harfbuzz {
      if [ -e harfbuzz-stamp ]; then return; fi
      python3 -m pip install meson ninja
  
@@ -58,7 +49,7 @@ index 8f47b3dea..7cfb835ec 100755
      local out_dir=$(fetch_unpack https://github.com/harfbuzz/harfbuzz/releases/download/$HARFBUZZ_VERSION/harfbuzz-$HARFBUZZ_VERSION.tar.xz harfbuzz-$HARFBUZZ_VERSION.tar.xz)
      (cd $out_dir \
          && meson setup build --prefix=$BUILD_PREFIX --libdir=$BUILD_PREFIX/lib --buildtype=minsize -Dfreetype=enabled -Dglib=disabled -Dtests=disabled $HOST_MESON_FLAGS)
-@@ -244,13 +266,13 @@ function build_zstd {
+@@ -244,13 +264,13 @@ function build_zstd {
      if [ -e zstd-stamp ]; then return; fi
      local out_dir=$(fetch_unpack https://github.com/facebook/zstd/releases/download/v$ZSTD_VERSION/zstd-$ZSTD_VERSION.tar.gz)
      (cd $out_dir \
@@ -74,7 +65,7 @@ index 8f47b3dea..7cfb835ec 100755
          yum remove -y zlib-devel
      fi
      if [[ -n "$IS_MACOS" ]]; then
-@@ -260,7 +282,7 @@ function build {
+@@ -260,7 +280,7 @@ function build {
      fi
  
      build_simple xcb-proto 1.17.0 https://xorg.freedesktop.org/archive/individual/proto
@@ -83,7 +74,7 @@ index 8f47b3dea..7cfb835ec 100755
          build_simple xorgproto 2025.1 https://www.x.org/pub/individual/proto
          build_simple libXau 1.0.12 https://www.x.org/pub/individual/lib
          build_simple libpthread-stubs 0.5 https://xcb.freedesktop.org/dist
-@@ -300,6 +322,8 @@ function build {
+@@ -300,6 +320,8 @@ function build {
          https://storage.googleapis.com/downloads.webmproject.org/releases/webp tar.gz \
          --enable-libwebpmux --enable-libwebpdemux
  
@@ -92,16 +83,7 @@ index 8f47b3dea..7cfb835ec 100755
      build_brotli
  
      if [[ -n "$IS_MACOS" ]]; then
-@@ -319,7 +343,7 @@ function build {
- function create_meson_cross_config {
-     cat << EOF > $WORKDIR/meson-cross.txt
- [binaries]
--pkg-config = '$BUILD_PREFIX/bin/pkg-config'
-+pkg-config = '$HOME/.local/bin/pkg-config'
- cmake = '$(which cmake)'
- c = '$CC'
- cpp = '$CXX'
-@@ -332,9 +356,8 @@ c_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
+@@ -332,9 +354,8 @@ c_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
  cpp_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
  
  [host_machine]
@@ -113,7 +95,7 @@ index 8f47b3dea..7cfb835ec 100755
  cpu_family = '$(uname -m)'
  cpu = '$(uname -m)'
  endian = 'little'
-@@ -394,6 +417,8 @@ if [[ -n "$IS_MACOS" ]]; then
+@@ -394,6 +415,8 @@ if [[ -n "$IS_MACOS" ]]; then
      fi
  fi
  
