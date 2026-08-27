@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index 8f47b3dea..29fd4956a 100755
+index 8f47b3dea..ac6429cb0 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -74,9 +74,21 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
@@ -38,7 +38,7 @@ index 8f47b3dea..29fd4956a 100755
      if [ -e libavif-stamp ]; then return; fi
  
      python3 -m pip install meson ninja
-+    sudo ln -s "$CC" /usr/local/bin/aarch64-linux-android21-clang
++    ln -s "$CC" "$(dirname "$CC")/aarch64-linux-android21-clang"
 +    echo megabruh
 +    readlink /usr/local/bin/aarch64-linux-android21-clang
  
