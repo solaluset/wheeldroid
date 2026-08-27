@@ -130,7 +130,7 @@ index a2366e717..1b93640f5 100644
  test-requires = [
    "numpy",
 diff --git a/setup.py b/setup.py
-index f015a03ac..683f1893b 100644
+index f015a03ac..1b36625cc 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -709,6 +709,11 @@ class pil_build_ext(build_ext):
@@ -145,3 +145,12 @@ index f015a03ac..683f1893b 100644
          self.compiler.library_dirs = library_dirs + self.compiler.library_dirs
          self.compiler.include_dirs = include_dirs + self.compiler.include_dirs
  
+@@ -924,7 +929,7 @@ class pil_build_ext(build_ext):
+             defs.append(("HAVE_LIBIMAGEQUANT", None))
+         if feature.get("xcb"):
+             libs.append(feature.get("xcb"))
+-            if sys.platform == "ios":
++            if True:
+                 # Ensure transitive dependencies are linked.
+                 libs.append("Xau")
+             defs.append(("HAVE_XCB", None))
