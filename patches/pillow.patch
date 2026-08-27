@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index b3a5782..8fb8925 100755
+index b3a5782..67df260 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -74,9 +74,21 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
@@ -12,7 +12,7 @@ index b3a5782..8fb8925 100755
 +
 +    BUILD_PREFIX=~/.local
 +    HOST_CONFIGURE_FLAGS="--host=aarch64-linux-android24"
-+    HOST_CMAKE_FLAGS="-DCMAKE_SYSTEM_NAME=Android -DCMAKE_SYSTEM_PROCESSOR=aarch64"
++    HOST_CMAKE_FLAGS="-DCMAKE_SYSTEM_NAME=Android -DCMAKE_SYSTEM_PROCESSOR=aarch64 -DBUILD_SHARED_LIBS=NO -DENABLE_SHARED=NO"
 +    HOST_MESON_FLAGS="--cross-file '$WORKDIR/meson-cross.txt'"
 +    export LIBRARY_PATH="$BUILD_PREFIX/lib:${LIBRARY_PATH%:}"
 +    export LD_LIBRARY_PATH="$LIBRARY_PATH"
