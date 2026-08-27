@@ -1,18 +1,8 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index 8f47b3dea..cb2aa06d4 100755
+index 8f47b3dea..4807e700b 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
-@@ -1,5 +1,9 @@
- #!/bin/bash
- 
-+command -v aarch64-linux-android24-clang
-+command -v aarch64-linux-android21-clang
-+exit 1
-+
- # Safety check - Pillow builds require that CIBW_ARCHS is set, and that it only
- # contains a single value (even though cibuildwheel allows multiple values in
- # CIBW_ARCHS). This check doesn't work on Linux because of how the CIBW_ARCHS
-@@ -74,9 +78,21 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
+@@ -74,9 +74,22 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
      WORKDIR=$(pwd)/build/darwin
      BUILD_PREFIX=$(pwd)/build/deps/darwin
  else
@@ -24,6 +14,7 @@ index 8f47b3dea..cb2aa06d4 100755
 +    HOST_CONFIGURE_FLAGS="--host=aarch64-linux-android24 --disable-shared --enable-static"
 +    HOST_CMAKE_FLAGS="-DCMAKE_SYSTEM_NAME=Android -DCMAKE_SYSTEM_PROCESSOR=aarch64 -DBUILD_SHARED_LIBS=NO -DENABLE_SHARED=NO"
 +    HOST_MESON_FLAGS="--cross-file '$WORKDIR/meson-cross.txt' -Dprefer_static=true -Ddefault_library=static"
++    export PATH="$(dirname "$CC"):$PATH"
 +    export LIBRARY_PATH="$BUILD_PREFIX/lib:${LIBRARY_PATH%:}"
 +    export LD_LIBRARY_PATH="$LIBRARY_PATH"
 +    export PKG_CONFIG_PATH="$BUILD_PREFIX/share/pkgconfig:$PKG_CONFIG_PATH"
@@ -35,7 +26,7 @@ index 8f47b3dea..cb2aa06d4 100755
      MB_ML_LIBC=${AUDITWHEEL_POLICY::9}
      MB_ML_VER=${AUDITWHEEL_POLICY:9}
  fi
-@@ -144,7 +160,7 @@ function build_zlib_ng {
+@@ -144,7 +157,7 @@ function build_zlib_ng {
      ORIGINAL_HOST_CONFIGURE_FLAGS=$HOST_CONFIGURE_FLAGS
      unset HOST_CONFIGURE_FLAGS
  
@@ -44,7 +35,7 @@ index 8f47b3dea..cb2aa06d4 100755
  
      HOST_CONFIGURE_FLAGS=$ORIGINAL_HOST_CONFIGURE_FLAGS
      touch zlib-stamp
-@@ -175,6 +191,9 @@ function build_libavif {
+@@ -175,6 +188,9 @@ function build_libavif {
      if [ -e libavif-stamp ]; then return; fi
  
      python3 -m pip install meson ninja
@@ -54,7 +45,7 @@ index 8f47b3dea..cb2aa06d4 100755
  
      if ([[ "$PLAT" == "x86_64" ]] && [[ -z "$IOS_SDK" ]]) || [ -n "$SANITIZER" ]; then
          build_simple nasm 2.16.03 https://www.nasm.us/pub/nasm/releasebuilds/2.16.03
-@@ -208,6 +227,14 @@ function build_libavif {
+@@ -208,6 +224,14 @@ function build_libavif {
      fi
  
      local out_dir=$(fetch_unpack https://github.com/AOMediaCodec/libavif/archive/refs/tags/v$LIBAVIF_VERSION.tar.gz libavif-$LIBAVIF_VERSION.tar.gz)
@@ -69,7 +60,7 @@ index 8f47b3dea..cb2aa06d4 100755
  
      # CONFIG_AV1_HIGHBITDEPTH=0 is a flag for libaom (included as a subproject
      # of libavif) that disables support for encoding high bit depth images.
-@@ -228,14 +255,14 @@ function build_libavif {
+@@ -228,14 +252,14 @@ function build_libavif {
              "${libavif_cmake_flags[@]}" \
              $HOST_CMAKE_FLAGS . )
  
@@ -87,7 +78,7 @@ index 8f47b3dea..cb2aa06d4 100755
  
      touch libavif-stamp
  }
-@@ -244,13 +271,13 @@ function build_zstd {
+@@ -244,13 +268,13 @@ function build_zstd {
      if [ -e zstd-stamp ]; then return; fi
      local out_dir=$(fetch_unpack https://github.com/facebook/zstd/releases/download/v$ZSTD_VERSION/zstd-$ZSTD_VERSION.tar.gz)
      (cd $out_dir \
@@ -103,7 +94,7 @@ index 8f47b3dea..cb2aa06d4 100755
          yum remove -y zlib-devel
      fi
      if [[ -n "$IS_MACOS" ]]; then
-@@ -260,7 +287,7 @@ function build {
+@@ -260,7 +284,7 @@ function build {
      fi
  
      build_simple xcb-proto 1.17.0 https://xorg.freedesktop.org/archive/individual/proto
@@ -112,7 +103,7 @@ index 8f47b3dea..cb2aa06d4 100755
          build_simple xorgproto 2025.1 https://www.x.org/pub/individual/proto
          build_simple libXau 1.0.12 https://www.x.org/pub/individual/lib
          build_simple libpthread-stubs 0.5 https://xcb.freedesktop.org/dist
-@@ -317,7 +344,7 @@ function build {
+@@ -317,7 +341,7 @@ function build {
  }
  
  function create_meson_cross_config {
@@ -121,7 +112,7 @@ index 8f47b3dea..cb2aa06d4 100755
  [binaries]
  pkg-config = '$BUILD_PREFIX/bin/pkg-config'
  cmake = '$(which cmake)'
-@@ -332,9 +359,8 @@ c_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
+@@ -332,9 +356,8 @@ c_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
  cpp_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
  
  [host_machine]
@@ -133,7 +124,7 @@ index 8f47b3dea..cb2aa06d4 100755
  cpu_family = '$(uname -m)'
  cpu = '$(uname -m)'
  endian = 'little'
-@@ -394,6 +420,8 @@ if [[ -n "$IS_MACOS" ]]; then
+@@ -394,6 +417,8 @@ if [[ -n "$IS_MACOS" ]]; then
      fi
  fi
  
