@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index 8f47b3dea..0296a0685 100755
+index 8f47b3dea..6dbf576cc 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -74,9 +74,23 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
@@ -70,7 +70,15 @@ index 8f47b3dea..0296a0685 100755
      build_brotli
  
      if [[ -n "$IS_MACOS" ]]; then
-@@ -332,9 +348,8 @@ c_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
+@@ -319,7 +335,6 @@ function build {
+ function create_meson_cross_config {
+     cat << EOF > $WORKDIR/meson-cross.txt
+ [binaries]
+-pkg-config = '$BUILD_PREFIX/bin/pkg-config'
+ cmake = '$(which cmake)'
+ c = '$CC'
+ cpp = '$CXX'
+@@ -332,9 +347,8 @@ c_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
  cpp_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
  
  [host_machine]
@@ -82,7 +90,7 @@ index 8f47b3dea..0296a0685 100755
  cpu_family = '$(uname -m)'
  cpu = '$(uname -m)'
  endian = 'little'
-@@ -394,6 +409,10 @@ if [[ -n "$IS_MACOS" ]]; then
+@@ -394,6 +408,10 @@ if [[ -n "$IS_MACOS" ]]; then
      fi
  fi
  
