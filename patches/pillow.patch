@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index b3a5782..ccf99e5 100755
+index b3a5782..01d0544 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -74,9 +74,21 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
@@ -41,7 +41,7 @@ index b3a5782..ccf99e5 100755
 +    sed -i -E "s|--cross-file=\"[^\"]+\"|--cross-file='$WORKDIR/meson-cross.txt'|" "$out_dir/ext/dav1d_android.sh"
 +    echo megabruh
 +    cat "$out_dir/ext/dav1d_android.sh"
-+    cp "$WORKDIR/meson-cross.txt" package/crossfiles/aarch64-android.meson
++    cp "$WORKDIR/meson-cross.txt" "$out_dir/package/crossfiles/aarch64-android.meson"
  
      # CONFIG_AV1_HIGHBITDEPTH=0 is a flag for libaom (included as a subproject
      # of libavif) that disables support for encoding high bit depth images.
