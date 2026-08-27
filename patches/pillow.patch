@@ -124,3 +124,17 @@ index a2366e717..1b93640f5 100644
  test-command = "cd {project} && .github/workflows/wheels-test.sh"
  test-requires = [
    "numpy",
+diff --git a/setup.py b/setup.py
+index f015a03ac..3ffeceab0 100644
+--- a/setup.py
++++ b/setup.py
+@@ -25,6 +25,9 @@ TYPE_CHECKING = False
+ if TYPE_CHECKING:
+     from setuptools import _BuildInfo
+ 
++os.environ["CFLAGS"] = "{CFLAGS} -I{GITHUB_WORKSPACE}/deps-prefix/include".format(**os.environ)
++os.environ["LD_LIBRARY_PATH"] = "{GITHUB_WORKSPACE}/deps-prefix/lib:{LD_LIBRARY_PATH}".format(**os.environ)
++
+ configuration: dict[str, list[str]] = {}
+ 
+ # parse configuration from _custom_build/backend.py
