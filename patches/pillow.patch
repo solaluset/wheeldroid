@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index 8f47b3dea..760ce7c11 100755
+index 8f47b3d..760ce7c 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -74,9 +74,23 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
@@ -102,7 +102,7 @@ index 8f47b3dea..760ce7c11 100755
  
  # A safety catch for iOS. iOS can't use dynamic libraries, but clang will prefer
 diff --git a/pyproject.toml b/pyproject.toml
-index a2366e717..1b93640f5 100644
+index a2366e7..1b93640 100644
 --- a/pyproject.toml
 +++ b/pyproject.toml
 @@ -3,6 +3,9 @@ build-backend = "backend"
@@ -125,17 +125,17 @@ index a2366e717..1b93640f5 100644
  test-requires = [
    "numpy",
 diff --git a/setup.py b/setup.py
-index f015a03ac..89f2e5f92 100644
+index f015a03..8d41a1e 100644
 --- a/setup.py
 +++ b/setup.py
-@@ -25,6 +25,10 @@ TYPE_CHECKING = False
- if TYPE_CHECKING:
-     from setuptools import _BuildInfo
+@@ -709,6 +709,10 @@ class pil_build_ext(build_ext):
+         # insert new dirs *before* default libs, to avoid conflicts
+         # between Python PYD stub libs and real libraries
  
-+os.environ["CFLAGS"] = "{CFLAGS} -I{GITHUB_WORKSPACE}/deps-prefix/include".format(**os.environ)
-+os.environ["LD_LIBRARY_PATH"] = "{GITHUB_WORKSPACE}/deps-prefix/lib:{LD_LIBRARY_PATH}".format(**os.environ)
-+raise RuntimeError(os.environ["LD_LIBRARY_PATH"])
++        _dir = os.path.join(os.environ["GITHUB_WORKSPACE"], "deps-prefix")
++        _add_directory(library_dirs, os.path.join(_dir, "lib"))
++        _add_directory(include_dirs, os.path.join(_dir, "include"))
 +
- configuration: dict[str, list[str]] = {}
+         self.compiler.library_dirs = library_dirs + self.compiler.library_dirs
+         self.compiler.include_dirs = include_dirs + self.compiler.include_dirs
  
- # parse configuration from _custom_build/backend.py
