@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index 8f47b3dea..53885363f 100755
+index 8f47b3dea..5885d9301 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -1,5 +1,7 @@
@@ -93,11 +93,13 @@ index 8f47b3dea..53885363f 100755
  cpu_family = '$(uname -m)'
  cpu = '$(uname -m)'
  endian = 'little'
-@@ -394,6 +414,8 @@ if [[ -n "$IS_MACOS" ]]; then
+@@ -394,6 +414,10 @@ if [[ -n "$IS_MACOS" ]]; then
      fi
  fi
  
 +create_meson_cross_config
++find /home/runner/work/wheeldroid/wheeldroid/android-sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64 | grep /include/
++exit 1
 +
  wrap_wheel_builder build
  
@@ -126,7 +128,7 @@ index a2366e717..1b93640f5 100644
  test-requires = [
    "numpy",
 diff --git a/setup.py b/setup.py
-index f015a03ac..e23043a9e 100644
+index f015a03ac..24d3ad36d 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -497,6 +497,12 @@ class pil_build_ext(build_ext):
@@ -142,23 +144,19 @@ index f015a03ac..e23043a9e 100644
          pkg_config = None
          if _cmd_exists(os.environ.get("PKG_CONFIG", "pkg-config")):
              pkg_config = _pkg_config
-@@ -709,8 +715,15 @@ class pil_build_ext(build_ext):
+@@ -709,6 +715,11 @@ class pil_build_ext(build_ext):
          # insert new dirs *before* default libs, to avoid conflicts
          # between Python PYD stub libs and real libraries
  
 +        _dir = os.path.join(os.environ["GITHUB_WORKSPACE"], "deps-prefix")
 +        _add_directory(library_dirs, os.path.join(_dir, "lib"))
 +        _add_directory(include_dirs, os.path.join(_dir, "include"))
-+        _add_directory(include_dirs, "/usr/aarch64-linux-gnu/include")
++        # _add_directory(include_dirs, "/usr/aarch64-linux-gnu/include")
 +
          self.compiler.library_dirs = library_dirs + self.compiler.library_dirs
          self.compiler.include_dirs = include_dirs + self.compiler.include_dirs
-+        print("megabruh")
-+        print(self.compiler.library_dirs)
  
-         #
-         # look for available libraries
-@@ -905,7 +918,7 @@ class pil_build_ext(build_ext):
+@@ -905,7 +916,7 @@ class pil_build_ext(build_ext):
                  # so we have to guess; by default it is defined in all Windows builds.
                  # See #4237, #5243, #5359 for more information.
                  defs.append(("USE_WIN32_FILEIO", None))
@@ -167,7 +165,7 @@ index f015a03ac..e23043a9e 100644
                  # Ensure transitive dependencies are linked.
                  libs.append("lzma")
          if feature.get("jpeg"):
-@@ -924,7 +937,7 @@ class pil_build_ext(build_ext):
+@@ -924,7 +935,7 @@ class pil_build_ext(build_ext):
              defs.append(("HAVE_LIBIMAGEQUANT", None))
          if feature.get("xcb"):
              libs.append(feature.get("xcb"))
@@ -176,7 +174,7 @@ index f015a03ac..e23043a9e 100644
                  # Ensure transitive dependencies are linked.
                  libs.append("Xau")
              defs.append(("HAVE_XCB", None))
-@@ -959,7 +972,7 @@ class pil_build_ext(build_ext):
+@@ -959,7 +970,7 @@ class pil_build_ext(build_ext):
                      else:  # building FriBiDi shim from src/thirdparty
                          srcs.append("src/thirdparty/fribidi-shim/fribidi.c")
  
@@ -185,7 +183,7 @@ index f015a03ac..e23043a9e 100644
                  # Ensure transitive dependencies are linked.
                  libs.extend(["z", "bz2", "brotlicommon", "brotlidec", "png"])
  
-@@ -979,7 +992,7 @@ class pil_build_ext(build_ext):
+@@ -979,7 +990,7 @@ class pil_build_ext(build_ext):
          webp = feature.get("webp")
          if isinstance(webp, str):
              libs = [webp, webp + "mux", webp + "demux"]
