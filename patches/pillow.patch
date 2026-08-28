@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index 8f47b3d..3a3e1a7 100755
+index 8f47b3d..494e9d2 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -1,5 +1,12 @@
@@ -15,7 +15,7 @@ index 8f47b3d..3a3e1a7 100755
  # Safety check - Pillow builds require that CIBW_ARCHS is set, and that it only
  # contains a single value (even though cibuildwheel allows multiple values in
  # CIBW_ARCHS). This check doesn't work on Linux because of how the CIBW_ARCHS
-@@ -74,9 +81,27 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
+@@ -74,9 +81,23 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
      WORKDIR=$(pwd)/build/darwin
      BUILD_PREFIX=$(pwd)/build/deps/darwin
  else
@@ -37,14 +37,10 @@ index 8f47b3d..3a3e1a7 100755
 +    sudo ln -s "$(pwd)/build/cpu_features/ndk_compat" /sources/android/cpufeatures
 +    export CFLAGS="$CFLAGS -I$(pwd)/build/cpu_features/include -DSTACK_LINE_READER_BUFFER_SIZE=1024 -fPIC"
 +
-+    # sudo dpkg --add-architecture arm64
-+    # sudo apt-get update
-+    # sudo apt-get install libc6-dev-arm64-cross
-+
      MB_ML_LIBC=${AUDITWHEEL_POLICY::9}
      MB_ML_VER=${AUDITWHEEL_POLICY:9}
  fi
-@@ -244,13 +269,13 @@ function build_zstd {
+@@ -244,13 +265,13 @@ function build_zstd {
      if [ -e zstd-stamp ]; then return; fi
      local out_dir=$(fetch_unpack https://github.com/facebook/zstd/releases/download/v$ZSTD_VERSION/zstd-$ZSTD_VERSION.tar.gz)
      (cd $out_dir \
@@ -60,7 +56,7 @@ index 8f47b3d..3a3e1a7 100755
          yum remove -y zlib-devel
      fi
      if [[ -n "$IS_MACOS" ]]; then
-@@ -260,7 +285,7 @@ function build {
+@@ -260,7 +281,7 @@ function build {
      fi
  
      build_simple xcb-proto 1.17.0 https://xorg.freedesktop.org/archive/individual/proto
@@ -69,7 +65,7 @@ index 8f47b3d..3a3e1a7 100755
          build_simple xorgproto 2025.1 https://www.x.org/pub/individual/proto
          build_simple libXau 1.0.12 https://www.x.org/pub/individual/lib
          build_simple libpthread-stubs 0.5 https://xcb.freedesktop.org/dist
-@@ -300,9 +325,11 @@ function build {
+@@ -300,9 +321,11 @@ function build {
          https://storage.googleapis.com/downloads.webmproject.org/releases/webp tar.gz \
          --enable-libwebpmux --enable-libwebpdemux
  
@@ -82,7 +78,7 @@ index 8f47b3d..3a3e1a7 100755
          # Custom freetype build
          build_simple freetype $FREETYPE_VERSION https://download.savannah.gnu.org/releases/freetype tar.gz --with-harfbuzz=no
      else
-@@ -319,7 +346,6 @@ function build {
+@@ -319,7 +342,6 @@ function build {
  function create_meson_cross_config {
      cat << EOF > $WORKDIR/meson-cross.txt
  [binaries]
@@ -90,7 +86,7 @@ index 8f47b3d..3a3e1a7 100755
  cmake = '$(which cmake)'
  c = '$CC'
  cpp = '$CXX'
-@@ -332,9 +358,8 @@ c_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
+@@ -332,9 +354,8 @@ c_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
  cpp_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
  
  [host_machine]
@@ -102,7 +98,7 @@ index 8f47b3d..3a3e1a7 100755
  cpu_family = '$(uname -m)'
  cpu = '$(uname -m)'
  endian = 'little'
-@@ -394,6 +419,8 @@ if [[ -n "$IS_MACOS" ]]; then
+@@ -394,6 +415,8 @@ if [[ -n "$IS_MACOS" ]]; then
      fi
  fi
  
