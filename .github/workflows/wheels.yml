@@ -6,6 +6,8 @@ on:
   push:
     branches:
       - main
+      - test
+      - full-rebuild
   release:
     types:
       - published
@@ -39,7 +41,13 @@ jobs:
         id: get-urls
         run: |
           set -e
-          curl -LsS "https://github.com/$GITHUB_REPOSITORY/releases/latest/download/wheels.tar.gz" | tar --wildcards -ztf - '*.whl' > cached.txt
+
+          if [ "$GITHUB_REF_NAME" = "full-rebuild" ]; then
+            touch cached.txt
+          else
+            curl -LsS "https://github.com/$GITHUB_REPOSITORY/releases/latest/download/wheels.tar.gz" | tar --wildcards -ztf - '*.whl' > cached.txt
+          fi
+
           output=$(python get-urls.py)
           echo "urls=$output" >> "$GITHUB_OUTPUT"
 
@@ -51,6 +59,7 @@ jobs:
           fi
 
       - name: Push updated package list
+        if: github.ref_name == 'main' || (github.event_name == 'pull_request' && github.event.pull_request.user.login == 'dependabot[bot]')
         uses: ad-m/github-push-action@v1.3.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -88,14 +97,26 @@ jobs:
           rm -fr .git
           mkdir -p build
           cd build
-          curl -LsS -O "$URL"
-          file=$(echo *)
-          echo "Unpacking $file"
-          tar -axf "$file"
-          rm "$file"
-          # split name and version
-          eval "package=$(echo * | tr '[:upper:]' '[:lower:]' | sed 's/-/ version=/')"
-          mv * "$package"
+
+          info=($URL)
+          package="${info[0]}"
+          version="${info[1]}"
+          source="${info[2]}"
+          url="${info[3]}"
+          extra="${info[4]}"
+
+          if [ "$source" = "git" ]; then
+            echo "Cloning $url to $package"
+            git clone --depth 1 --branch "$extra" --recurse-submodules "$url" "$package"
+          else
+            curl -LsS -O "$url"
+            file=$(echo *)
+            echo "Unpacking $file"
+            tar -axf "$file"
+            rm "$file"
+            mv * "$package"
+          fi
+
           cd "$package"
           for patch_name in "$package-$version" "$package"; do
             if [ -f "../../patches/$patch_name.patch" ]; then
@@ -129,7 +150,7 @@ jobs:
   release:
     name: Create release
     needs: [build_wheels]
-    if: github.ref_name == 'main' || (github.event_name == 'pull_request' && github.event.pull_request.user.login == 'dependabot[bot]')
+    if: github.ref_name == 'main' || github.ref_name == 'full-rebuild' || (github.event_name == 'pull_request' && github.event.pull_request.user.login == 'dependabot[bot]')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -154,7 +175,11 @@ jobs:
             fi
           done
           cd ../wheels
-          curl -LsS "https://github.com/$GITHUB_REPOSITORY/releases/latest/download/wheels.tar.gz" | tar -zxkf -
+
+          if [ "$GITHUB_REF_NAME" != "full-rebuild" ]; then
+            curl -LsS "https://github.com/$GITHUB_REPOSITORY/releases/latest/download/wheels.tar.gz" | tar -zxkf -
+          fi
+
           zip -r ../wheels.zip *
           tar -acf ../wheels.tar.gz *
 
