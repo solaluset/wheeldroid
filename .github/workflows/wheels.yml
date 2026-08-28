@@ -51,6 +51,8 @@ jobs:
           fi
 
           output=$(python get-urls.py)
+          echo "Got package list:"
+          cat <<< "$output"
           echo "urls=$output" >> "$GITHUB_OUTPUT"
 
           git config --local user.email '41898282+github-actions[bot]@users.noreply.github.com'
