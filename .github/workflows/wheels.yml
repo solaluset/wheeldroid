@@ -128,11 +128,8 @@ jobs:
           CIBW_REPAIR_WHEEL_COMMAND_ANDROID: "LDPATHS={ldpaths} DEST_DIR={dest_dir} WHEEL={wheel} ./auditwheel.sh"
           CIBW_BUILD_FRONTEND: "build[uv]"
           CIBW_ENVIRONMENT_ANDROID: "LDSHARED=${{ github.workspace }}/ldshared.sh"
-          CIBW_ENVIRONMENT_PASS_LINUX: '["LD_LIBRARY_PATH", "CFLAGS"]'
 
           ANDROID_HOME: "${{ github.workspace }}/android-sdk"
-          LD_LIBRARY_PATH: "$GITHUB_WORKSPACE/deps-prefix/lib:$LD_LIBRARY_PATH"
-          CFLAGS: "$CFLAGS -I$GITHUB_WORKSPACE/deps-prefix/include"
 
       - uses: actions/upload-artifact@v7
         with:
