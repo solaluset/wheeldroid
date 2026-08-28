@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index 8f47b3dea..53885363f 100755
+index 8f47b3d..5388536 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -1,5 +1,7 @@
@@ -103,7 +103,7 @@ index 8f47b3dea..53885363f 100755
  
  # A safety catch for iOS. iOS can't use dynamic libraries, but clang will prefer
 diff --git a/pyproject.toml b/pyproject.toml
-index a2366e717..1b93640f5 100644
+index a2366e7..1b93640 100644
 --- a/pyproject.toml
 +++ b/pyproject.toml
 @@ -3,6 +3,9 @@ build-backend = "backend"
@@ -126,7 +126,7 @@ index a2366e717..1b93640f5 100644
  test-requires = [
    "numpy",
 diff --git a/setup.py b/setup.py
-index f015a03ac..a9b54eb8e 100644
+index f015a03..a9b54eb 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -371,7 +371,7 @@ class pil_build_ext(build_ext):
@@ -199,3 +199,16 @@ index f015a03ac..a9b54eb8e 100644
                  # Ensure transitive dependencies are linked.
                  libs.append("sharpyuv")
              self._update_extension("PIL._webp", libs)
+diff --git a/wheels/multibuild/library_builders.sh b/wheels/multibuild/library_builders.sh
+index 28bcbc5..8494644 100644
+--- a/wheels/multibuild/library_builders.sh
++++ b/wheels/multibuild/library_builders.sh
+@@ -183,7 +183,7 @@ function build_libpng {
+ }
+ 
+ function build_bzip2 {
+-    if [ -n "$IS_MACOS" ]; then return; fi  # OSX has bzip2 libs already
++    if true; then return; fi
+     if [ -e bzip2-stamp ]; then return; fi
+     fetch_unpack https://mirrors.kernel.org/sourceware/bzip2/bzip2-${BZIP2_VERSION}.tar.gz
+     (cd bzip2-${BZIP2_VERSION} \
