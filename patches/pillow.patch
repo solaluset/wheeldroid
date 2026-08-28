@@ -135,7 +135,7 @@ index a2366e7..1b93640 100644
  test-requires = [
    "numpy",
 diff --git a/setup.py b/setup.py
-index f015a03..134fa67 100644
+index f015a03..1d28d04 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -369,9 +369,7 @@ class pil_build_ext(build_ext):
@@ -168,8 +168,8 @@ index f015a03..134fa67 100644
  
 +
 +        deps_prefix = os.path.join(os.environ["GITHUB_WORKSPACE"], "deps-prefix")
-+#        _add_directory(library_dirs, os.path.join(deps_prefix, "lib"))
-+        _add_directory(include_dirs, os.path.join(deps_prefix, "include"))
++        _add_directory(library_dirs, os.path.join(deps_prefix, "lib"))
++#        _add_directory(include_dirs, os.path.join(deps_prefix, "include"))
 +
          #
          # insert new dirs *before* default libs, to avoid conflicts
