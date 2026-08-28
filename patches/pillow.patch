@@ -107,7 +107,7 @@ index 8f47b3d..58fbd86 100755
  
  # A safety catch for iOS. iOS can't use dynamic libraries, but clang will prefer
 diff --git a/pyproject.toml b/pyproject.toml
-index a2366e7..1b93640 100644
+index a2366e7..8bf71e0 100644
 --- a/pyproject.toml
 +++ b/pyproject.toml
 @@ -3,6 +3,9 @@ build-backend = "backend"
@@ -125,7 +125,7 @@ index a2366e7..1b93640 100644
  build-verbosity = 1
  config-settings = "raqm=enable raqm=vendor fribidi=vendor imagequant=disable"
 -before-all = ".github/workflows/wheels-dependencies.sh"
-+before-build = "cd build/pillow && .github/workflows/wheels-dependencies.sh"
++before-all = "cd build/pillow && .github/workflows/wheels-dependencies.sh"
  test-command = "cd {project} && .github/workflows/wheels-test.sh"
  test-requires = [
    "numpy",
