@@ -135,7 +135,7 @@ index a2366e7..1b93640 100644
  test-requires = [
    "numpy",
 diff --git a/setup.py b/setup.py
-index f015a03..1e99eb0 100644
+index f015a03..134fa67 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -369,9 +369,7 @@ class pil_build_ext(build_ext):
@@ -156,24 +156,25 @@ index f015a03..1e99eb0 100644
 +        ndk_root = os.path.join(
 +            os.path.dirname(os.path.dirname(os.environ["CC"])), "sysroot", "usr"
 +        )
-+        _add_directory(library_dirs, os.path.join(ndk_root, "lib"))
++        _add_directory(library_dirs, os.path.join(ndk_root, "lib", "aarch64-linux-android", "24"))
 +        _add_directory(include_dirs, os.path.join(ndk_root, "include"))
 +
          pkg_config = None
          if _cmd_exists(os.environ.get("PKG_CONFIG", "pkg-config")):
              pkg_config = _pkg_config
-@@ -709,6 +713,10 @@ class pil_build_ext(build_ext):
+@@ -705,6 +709,11 @@ class pil_build_ext(build_ext):
+                 _add_directory(library_dirs, os.path.join(best_path, "lib"))
+                 _add_directory(include_dirs, os.path.join(best_path, "include"))
+ 
++
++        deps_prefix = os.path.join(os.environ["GITHUB_WORKSPACE"], "deps-prefix")
++#        _add_directory(library_dirs, os.path.join(deps_prefix, "lib"))
++        _add_directory(include_dirs, os.path.join(deps_prefix, "include"))
++
+         #
          # insert new dirs *before* default libs, to avoid conflicts
          # between Python PYD stub libs and real libraries
- 
-+        _dir = os.path.join(os.environ["GITHUB_WORKSPACE"], "deps-prefix")
-+        _add_directory(library_dirs, os.path.join(_dir, "lib"))
-+        _add_directory(include_dirs, os.path.join(_dir, "include"))
-+
-         self.compiler.library_dirs = library_dirs + self.compiler.library_dirs
-         self.compiler.include_dirs = include_dirs + self.compiler.include_dirs
- 
-@@ -905,7 +913,7 @@ class pil_build_ext(build_ext):
+@@ -905,7 +914,7 @@ class pil_build_ext(build_ext):
                  # so we have to guess; by default it is defined in all Windows builds.
                  # See #4237, #5243, #5359 for more information.
                  defs.append(("USE_WIN32_FILEIO", None))
@@ -182,7 +183,7 @@ index f015a03..1e99eb0 100644
                  # Ensure transitive dependencies are linked.
                  libs.append("lzma")
          if feature.get("jpeg"):
-@@ -924,7 +932,7 @@ class pil_build_ext(build_ext):
+@@ -924,7 +933,7 @@ class pil_build_ext(build_ext):
              defs.append(("HAVE_LIBIMAGEQUANT", None))
          if feature.get("xcb"):
              libs.append(feature.get("xcb"))
@@ -191,7 +192,7 @@ index f015a03..1e99eb0 100644
                  # Ensure transitive dependencies are linked.
                  libs.append("Xau")
              defs.append(("HAVE_XCB", None))
-@@ -959,9 +967,9 @@ class pil_build_ext(build_ext):
+@@ -959,9 +968,9 @@ class pil_build_ext(build_ext):
                      else:  # building FriBiDi shim from src/thirdparty
                          srcs.append("src/thirdparty/fribidi-shim/fribidi.c")
  
@@ -203,7 +204,7 @@ index f015a03..1e99eb0 100644
  
              self._update_extension("PIL._imagingft", libs, defs, srcs)
  
-@@ -979,7 +987,7 @@ class pil_build_ext(build_ext):
+@@ -979,7 +988,7 @@ class pil_build_ext(build_ext):
          webp = feature.get("webp")
          if isinstance(webp, str):
              libs = [webp, webp + "mux", webp + "demux"]
