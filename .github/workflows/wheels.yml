@@ -5,7 +5,9 @@ on:
   pull_request:
   push:
     branches:
-      - fix
+      - main
+      - test
+      - full-rebuild
   release:
     types:
       - published
@@ -39,7 +41,13 @@ jobs:
         id: get-urls
         run: |
           set -e
-          curl -LsS "https://github.com/$GITHUB_REPOSITORY/releases/latest/download/wheels.tar.gz" | tar --wildcards -ztf - '*.whl' > cached.txt
+
+          if [ "$GITHUB_REF_NAME" = "full-rebuild" ]; then
+            touch cached.txt
+          else
+            curl -LsS "https://github.com/$GITHUB_REPOSITORY/releases/latest/download/wheels.tar.gz" | tar --wildcards -ztf - '*.whl' > cached.txt
+          fi
+
           output=$(python get-urls.py)
           echo "urls=$output" >> "$GITHUB_OUTPUT"
 
@@ -142,7 +150,7 @@ jobs:
   release:
     name: Create release
     needs: [build_wheels]
-    if: github.ref_name == 'main' || (github.event_name == 'pull_request' && github.event.pull_request.user.login == 'dependabot[bot]')
+    if: github.ref_name == 'main' || github.ref_name == 'full-rebuild' || (github.event_name == 'pull_request' && github.event.pull_request.user.login == 'dependabot[bot]')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -167,7 +175,11 @@ jobs:
             fi
           done
           cd ../wheels
-          curl -LsS "https://github.com/$GITHUB_REPOSITORY/releases/latest/download/wheels.tar.gz" | tar -zxkf -
+
+          if [ "$GITHUB_REF_NAME" != "full-rebuild" ]; then
+            curl -LsS "https://github.com/$GITHUB_REPOSITORY/releases/latest/download/wheels.tar.gz" | tar -zxkf -
+          fi
+
           zip -r ../wheels.zip *
           tar -acf ../wheels.tar.gz *
 
