@@ -34,7 +34,13 @@ def fetch_sdist_info(
             else:
                 raise RuntimeError(f"sdist for {package} {version} not found")
         elif source == "git":
-            yield package, version, source, data["git-url"], data["git-tag-format"].format(version=version)
+            yield (
+                package,
+                version,
+                source,
+                data["git-url"],
+                data["git-tag-format"].format(version=version),
+            )
         else:
             raise ValueError(f"unknown source: {source}")
 
