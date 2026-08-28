@@ -13,31 +13,30 @@ def parse_cached_list(file) -> Iterable[tuple[str, str]]:
         yield pkg, version
 
 
-def fetch_sdist_urls(
-    package: str, versions: list[str]
-) -> Iterable[tuple[tuple[str, str], str]]:
+def fetch_sdist_info(
+    package: str, data: dict
+) -> Iterable[tuple[str, str, str, str, str]]:
     package = package.lower()
 
     with urlopen(f"https://pypi.org/pypi/{package}/json") as response:
-        data = json.load(response)
-    latest_version = data["info"]["version"]
-    if latest_version not in versions:
-        versions.append(latest_version)
+        pypi_data = json.load(response)
+    latest_version = pypi_data["info"]["version"]
+    if latest_version not in data["versions"]:
+        data["versions"].append(latest_version)
 
-    for version in versions:
-        if package == "pillow":
-            # pillow has incomplete sdists, download from GH
-            yield (
-                (package, version),
-                f"git:{package}-{version}:{version}:https://github.com/python-pillow/Pillow",
-            )
-            continue
-        for file in data["releases"][version]:
-            if file["packagetype"] == "sdist":
-                yield (package, version), file["url"]
-                break
+    source = data.get("source", "pypi")
+    for version in data["versions"]:
+        if source == "pypi":
+            for file in pypi_data["releases"][version]:
+                if file["packagetype"] == "sdist":
+                    yield package, version, source, file["url"], ""
+                    break
+            else:
+                raise RuntimeError(f"sdist for {package} {version} not found")
+        elif source == "git":
+            yield package, version, source, data["git-url"], data["git-tag-format"].format(version=version)
         else:
-            raise RuntimeError(f"sdist for {package} {version} not found")
+            raise ValueError(f"unknown source: {source}")
 
 
 def main():
@@ -46,11 +45,11 @@ def main():
     with open("cached.txt", "r") as file:
         cached = list(parse_cached_list(file))
 
-    urls = []
-    for package, versions in packages.items():
-        for info, url in fetch_sdist_urls(package, versions):
-            if info not in cached:
-                urls.append(url)
+    to_build = []
+    for package, data in packages.items():
+        for info in fetch_sdist_info(package, data):
+            if (info[0], info[1]) not in cached:
+                to_build.append(" ".join(info))
 
     # sort alphabetically
     packages = {
@@ -59,7 +58,7 @@ def main():
     with open("packages.json5", "w") as file:
         jsonc.dump(packages, file, indent=2, trailing_comma=True)
         file.write("\n")
-    json.dump(urls, sys.stdout)
+    json.dump(to_build, sys.stdout)
 
 
 if __name__ == "__main__":

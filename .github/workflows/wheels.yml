@@ -90,22 +90,25 @@ jobs:
           mkdir -p build
           cd build
 
-          if grep -q '^git:' <<< "$URL"; then
-            # special case
-            eval "$(sed -e 's/^git:/dest=/' -e 's/:/ tag=/' -e 's/:/ url="/' -e 's/$/"/' <<< "$URL")"
-            echo "Cloning $url to $dest"
-            git clone --depth 1 --branch "$tag" --recurse-submodules "$url" "$dest"
+          info=($URL)
+          package="${info[0]}"
+          version="${info[1]}"
+          source="${info[2]}"
+          url="${info[3]}"
+          extra="${info[4]}"
+
+          if [ "$source" = "git" ]; then
+            echo "Cloning $url to $package"
+            git clone --depth 1 --branch "$extra" --recurse-submodules "$url" "$package"
           else
-            curl -LsS -O "$URL"
+            curl -LsS -O "$url"
             file=$(echo *)
             echo "Unpacking $file"
             tar -axf "$file"
             rm "$file"
+            mv * "$package"
           fi
 
-          # split name and version
-          eval "package=$(echo * | tr '[:upper:]' '[:lower:]' | sed 's/-/ version=/')"
-          mv * "$package"
           cd "$package"
           for patch_name in "$package-$version" "$package"; do
             if [ -f "../../patches/$patch_name.patch" ]; then
