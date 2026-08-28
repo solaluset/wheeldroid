@@ -112,16 +112,16 @@ index 8f47b3d..3a3e1a7 100755
  
  # A safety catch for iOS. iOS can't use dynamic libraries, but clang will prefer
 diff --git a/pyproject.toml b/pyproject.toml
-index a2366e7..1b93640 100644
+index a2366e7..65055d6 100644
 --- a/pyproject.toml
 +++ b/pyproject.toml
 @@ -3,6 +3,9 @@ build-backend = "backend"
  requires = [
    "pybind11",
    "setuptools>=77",
-+  "pip",
-+  "meson",
-+  "ninja",
++#  "pip",
++#  "meson",
++#  "ninja",
  ]
  backend-path = [
    "_custom_build",
@@ -211,16 +211,3 @@ index f015a03..101124b 100644
                  # Ensure transitive dependencies are linked.
                  libs.append("sharpyuv")
              self._update_extension("PIL._webp", libs)
-diff --git a/wheels/multibuild/library_builders.sh b/wheels/multibuild/library_builders.sh
-index 28bcbc5..8494644 100644
---- a/wheels/multibuild/library_builders.sh
-+++ b/wheels/multibuild/library_builders.sh
-@@ -183,7 +183,7 @@ function build_libpng {
- }
- 
- function build_bzip2 {
--    if [ -n "$IS_MACOS" ]; then return; fi  # OSX has bzip2 libs already
-+    if true; then return; fi
-     if [ -e bzip2-stamp ]; then return; fi
-     fetch_unpack https://mirrors.kernel.org/sourceware/bzip2/bzip2-${BZIP2_VERSION}.tar.gz
-     (cd bzip2-${BZIP2_VERSION} \
