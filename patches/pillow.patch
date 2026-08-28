@@ -112,16 +112,16 @@ index 8f47b3d..3a3e1a7 100755
  
  # A safety catch for iOS. iOS can't use dynamic libraries, but clang will prefer
 diff --git a/pyproject.toml b/pyproject.toml
-index a2366e7..65055d6 100644
+index a2366e7..1b93640 100644
 --- a/pyproject.toml
 +++ b/pyproject.toml
 @@ -3,6 +3,9 @@ build-backend = "backend"
  requires = [
    "pybind11",
    "setuptools>=77",
-+#  "pip",
-+#  "meson",
-+#  "ninja",
++  "pip",
++  "meson",
++  "ninja",
  ]
  backend-path = [
    "_custom_build",
@@ -135,44 +135,45 @@ index a2366e7..65055d6 100644
  test-requires = [
    "numpy",
 diff --git a/setup.py b/setup.py
-index f015a03..101124b 100644
+index f015a03..420fb68 100644
 --- a/setup.py
 +++ b/setup.py
-@@ -371,7 +371,7 @@ class pil_build_ext(build_ext):
+@@ -369,9 +369,7 @@ class pil_build_ext(build_ext):
+         return True if value in configuration.get(option, []) else None
+ 
      def initialize_options(self) -> None:
-         self.disable_platform_guessing = self.check_configuration(
-             "platform-guessing", "disable"
+-        self.disable_platform_guessing = self.check_configuration(
+-            "platform-guessing", "disable"
 -        )
-+        ) or True
++        self.disable_platform_guessing = True
          build_ext.initialize_options(self)
          for x in self.feature:
              setattr(self, f"disable_{x}", self.check_configuration(x, "disable"))
-@@ -497,6 +497,12 @@ class pil_build_ext(build_ext):
+@@ -497,6 +495,12 @@ class pil_build_ext(build_ext):
          library_dirs: list[str] = []
          include_dirs: list[str] = []
  
 +        ndk_root = os.path.join(
 +            os.path.dirname(os.path.dirname(os.environ["CC"])), "sysroot", "usr"
 +        )
-+        _add_directory(library_dirs, os.path.join(ndk_root, "lib", "aarch64-linux-android", "24"))
++#        _add_directory(library_dirs, os.path.join(ndk_root, "lib", "aarch64-linux-android", "24"))
 +        _add_directory(include_dirs, os.path.join(ndk_root, "include"))
 +
          pkg_config = None
          if _cmd_exists(os.environ.get("PKG_CONFIG", "pkg-config")):
              pkg_config = _pkg_config
-@@ -709,6 +715,11 @@ class pil_build_ext(build_ext):
+@@ -709,6 +713,10 @@ class pil_build_ext(build_ext):
          # insert new dirs *before* default libs, to avoid conflicts
          # between Python PYD stub libs and real libraries
  
 +        _dir = os.path.join(os.environ["GITHUB_WORKSPACE"], "deps-prefix")
 +        _add_directory(library_dirs, os.path.join(_dir, "lib"))
 +        _add_directory(include_dirs, os.path.join(_dir, "include"))
-+        # _add_directory(include_dirs, "/usr/aarch64-linux-gnu/include")
 +
          self.compiler.library_dirs = library_dirs + self.compiler.library_dirs
          self.compiler.include_dirs = include_dirs + self.compiler.include_dirs
  
-@@ -905,7 +916,7 @@ class pil_build_ext(build_ext):
+@@ -905,7 +913,7 @@ class pil_build_ext(build_ext):
                  # so we have to guess; by default it is defined in all Windows builds.
                  # See #4237, #5243, #5359 for more information.
                  defs.append(("USE_WIN32_FILEIO", None))
@@ -181,7 +182,7 @@ index f015a03..101124b 100644
                  # Ensure transitive dependencies are linked.
                  libs.append("lzma")
          if feature.get("jpeg"):
-@@ -924,7 +935,7 @@ class pil_build_ext(build_ext):
+@@ -924,7 +932,7 @@ class pil_build_ext(build_ext):
              defs.append(("HAVE_LIBIMAGEQUANT", None))
          if feature.get("xcb"):
              libs.append(feature.get("xcb"))
@@ -190,7 +191,7 @@ index f015a03..101124b 100644
                  # Ensure transitive dependencies are linked.
                  libs.append("Xau")
              defs.append(("HAVE_XCB", None))
-@@ -959,9 +970,9 @@ class pil_build_ext(build_ext):
+@@ -959,9 +967,9 @@ class pil_build_ext(build_ext):
                      else:  # building FriBiDi shim from src/thirdparty
                          srcs.append("src/thirdparty/fribidi-shim/fribidi.c")
  
@@ -202,7 +203,7 @@ index f015a03..101124b 100644
  
              self._update_extension("PIL._imagingft", libs, defs, srcs)
  
-@@ -979,7 +990,7 @@ class pil_build_ext(build_ext):
+@@ -979,7 +987,7 @@ class pil_build_ext(build_ext):
          webp = feature.get("webp")
          if isinstance(webp, str):
              libs = [webp, webp + "mux", webp + "demux"]
