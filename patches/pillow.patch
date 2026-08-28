@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index 8f47b3d..3f30903 100755
+index 8f47b3d..a7e6b53 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -1,5 +1,12 @@
@@ -41,7 +41,14 @@ index 8f47b3d..3f30903 100755
      MB_ML_LIBC=${AUDITWHEEL_POLICY::9}
      MB_ML_VER=${AUDITWHEEL_POLICY:9}
  fi
-@@ -250,7 +272,7 @@ function build_zstd {
+@@ -244,13 +266,13 @@ function build_zstd {
+     if [ -e zstd-stamp ]; then return; fi
+     local out_dir=$(fetch_unpack https://github.com/facebook/zstd/releases/download/v$ZSTD_VERSION/zstd-$ZSTD_VERSION.tar.gz)
+     (cd $out_dir \
+-        && make -j4 install)
++        && PREFIX="$BUILD_PREFIX" make -j4 install)
+     touch zstd-stamp
+ }
  
  function build {
      build_xz
