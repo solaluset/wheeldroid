@@ -43,8 +43,10 @@ jobs:
           set -e
 
           if [ "$GITHUB_REF_NAME" = "full-rebuild" ]; then
+            echo "Full rebuild, skipping cache"
             touch cached.txt
           else
+            echo "Getting list of cached wheels"
             curl -LsS "https://github.com/$GITHUB_REPOSITORY/releases/latest/download/wheels.tar.gz" | tar --wildcards -ztf - '*.whl' > cached.txt
           fi
 
@@ -85,6 +87,7 @@ jobs:
           curl -LsS -o android.zip "https://dl.google.com/android/repository/commandlinetools-linux-15859902_latest.zip"
           mkdir -p android-sdk/cmdline-tools
           (cd android-sdk/cmdline-tools && unzip ../../android.zip)
+          rm android.zip
           mv android-sdk/cmdline-tools/cmdline-tools android-sdk/cmdline-tools/latest
 
       - name: Prepare sdist
@@ -177,6 +180,7 @@ jobs:
           cd ../wheels
 
           if [ "$GITHUB_REF_NAME" != "full-rebuild" ]; then
+            echo "Downloading cached wheels"
             curl -LsS "https://github.com/$GITHUB_REPOSITORY/releases/latest/download/wheels.tar.gz" | tar -zxkf -
           fi
 
