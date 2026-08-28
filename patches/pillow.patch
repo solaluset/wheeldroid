@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index 8f47b3d..5388536 100755
+index 8f47b3d..58fbd86 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -1,5 +1,7 @@
@@ -64,7 +64,7 @@ index 8f47b3d..5388536 100755
          build_simple xorgproto 2025.1 https://www.x.org/pub/individual/proto
          build_simple libXau 1.0.12 https://www.x.org/pub/individual/lib
          build_simple libpthread-stubs 0.5 https://xcb.freedesktop.org/dist
-@@ -300,6 +320,8 @@ function build {
+@@ -300,9 +320,11 @@ function build {
          https://storage.googleapis.com/downloads.webmproject.org/releases/webp tar.gz \
          --enable-libwebpmux --enable-libwebpdemux
  
@@ -72,7 +72,11 @@ index 8f47b3d..5388536 100755
 +
      build_brotli
  
-     if [[ -n "$IS_MACOS" ]]; then
+-    if [[ -n "$IS_MACOS" ]]; then
++    if true; then
+         # Custom freetype build
+         build_simple freetype $FREETYPE_VERSION https://download.savannah.gnu.org/releases/freetype tar.gz --with-harfbuzz=no
+     else
 @@ -319,7 +341,6 @@ function build {
  function create_meson_cross_config {
      cat << EOF > $WORKDIR/meson-cross.txt
