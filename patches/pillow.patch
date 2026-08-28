@@ -128,9 +128,18 @@ index a2366e717..1b93640f5 100644
  test-requires = [
    "numpy",
 diff --git a/setup.py b/setup.py
-index f015a03ac..24d3ad36d 100644
+index f015a03ac..a9b54eb8e 100644
 --- a/setup.py
 +++ b/setup.py
+@@ -371,7 +371,7 @@ class pil_build_ext(build_ext):
+     def initialize_options(self) -> None:
+         self.disable_platform_guessing = self.check_configuration(
+             "platform-guessing", "disable"
+-        )
++        ) or True
+         build_ext.initialize_options(self)
+         for x in self.feature:
+             setattr(self, f"disable_{x}", self.check_configuration(x, "disable"))
 @@ -497,6 +497,12 @@ class pil_build_ext(build_ext):
          library_dirs: list[str] = []
          include_dirs: list[str] = []
