@@ -130,7 +130,7 @@ index a2366e7..1b93640 100644
  test-requires = [
    "numpy",
 diff --git a/setup.py b/setup.py
-index f015a03..a9b54eb 100644
+index f015a03..101124b 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -371,7 +371,7 @@ class pil_build_ext(build_ext):
@@ -185,14 +185,17 @@ index f015a03..a9b54eb 100644
                  # Ensure transitive dependencies are linked.
                  libs.append("Xau")
              defs.append(("HAVE_XCB", None))
-@@ -959,7 +970,7 @@ class pil_build_ext(build_ext):
+@@ -959,9 +970,9 @@ class pil_build_ext(build_ext):
                      else:  # building FriBiDi shim from src/thirdparty
                          srcs.append("src/thirdparty/fribidi-shim/fribidi.c")
  
 -            if sys.platform == "ios":
 +            if True:
                  # Ensure transitive dependencies are linked.
-                 libs.extend(["z", "bz2", "brotlicommon", "brotlidec", "png"])
+-                libs.extend(["z", "bz2", "brotlicommon", "brotlidec", "png"])
++                libs.extend(["z", "brotlicommon", "brotlidec", "png"])
+ 
+             self._update_extension("PIL._imagingft", libs, defs, srcs)
  
 @@ -979,7 +990,7 @@ class pil_build_ext(build_ext):
          webp = feature.get("webp")
