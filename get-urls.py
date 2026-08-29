@@ -1,4 +1,5 @@
 import json
+import re
 import sys
 from collections.abc import Iterable
 from urllib.request import urlopen
@@ -10,13 +11,17 @@ def parse_cached_list(file) -> Iterable[tuple[str, str]]:
     for line in file.readlines():
         pkg, other = line.split("/")
         version = other.split("-")[1]
-        yield pkg, version
+        yield normalize_name(pkg), version
+
+
+def normalize_name(name: str) -> str:
+    return re.sub(r"[-_.]+", "-", name.lower())
 
 
 def fetch_sdist_info(
     package: str, data: dict
 ) -> Iterable[tuple[str, str, str, str, str]]:
-    package = package.lower()
+    package = normalize_name(package)
 
     with urlopen(f"https://pypi.org/pypi/{package}/json") as response:
         pypi_data = json.load(response)
