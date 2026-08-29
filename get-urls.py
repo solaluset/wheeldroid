@@ -58,9 +58,11 @@ def main():
 
     to_build = []
     for package, data in packages.items():
-        for info in fetch_sdist_info(package, data):
-            if (info[0], info[1]) not in cached:
-                to_build.append(" ".join(info))
+        for name, version, source, url, extra in fetch_sdist_info(package, data):
+            if (name, version) not in cached:
+                to_build.append(
+                    " ".join((name.replace("-", "_"), version, source, url, extra))
+                )
 
     # sort alphabetically
     packages = {
