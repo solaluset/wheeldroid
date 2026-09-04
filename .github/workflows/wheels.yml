@@ -191,7 +191,7 @@ jobs:
           tar -acf ../wheels.tar.gz *
 
       - name: Create release
-        uses: softprops/action-gh-release@v3.0.2
+        uses: softprops/action-gh-release@v3.0.3
         with:
           tag_name: v0.0.1
           files: |
