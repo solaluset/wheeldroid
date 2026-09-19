@@ -1,0 +1,12 @@
+diff --git a/setup.py b/setup.py
+index 32d94ae..80480d8 100644
+--- a/setup.py
++++ b/setup.py
+@@ -27,6 +27,7 @@ MODULES_CFLAGS = [os.getenv('UVLOOP_OPT_CFLAGS', '-O2')]
+ _ROOT = pathlib.Path(__file__).parent
+ LIBUV_DIR = str(_ROOT / 'vendor' / 'libuv')
+ LIBUV_BUILD_DIR = str(_ROOT / 'build' / 'libuv-{}'.format(MACHINE))
++os.environ['LIBUV_CONFIGURE_HOST'] = 'aarch64-linux-android24'
+ 
+ 
+ def _libuv_build_env():
