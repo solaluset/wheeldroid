@@ -104,6 +104,11 @@
       "0.16.8",
     ],
   },
+  "uvloop": {
+    "versions": [
+      "0.22.1",
+    ],
+  },
   "watchfiles": {
     "versions": [
       "1.2.0",
