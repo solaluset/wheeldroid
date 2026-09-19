@@ -1,5 +1,5 @@
 diff --git a/setup.py b/setup.py
-index 32d94ae..80480d8 100644
+index 32d94ae..9410d10 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -27,6 +27,7 @@ MODULES_CFLAGS = [os.getenv('UVLOOP_OPT_CFLAGS', '-O2')]
@@ -10,3 +10,12 @@ index 32d94ae..80480d8 100644
  
  
  def _libuv_build_env():
+@@ -214,8 +215,6 @@ class uvloop_build_ext(build_ext):
+         elif sys.platform.startswith('sunos'):
+             self.compiler.add_library('kstat')
+ 
+-        self.compiler.add_library('pthread')
+-
+         super().build_extensions()
+ 
+ 
