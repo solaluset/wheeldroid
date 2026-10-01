@@ -104,6 +104,7 @@
   "uvloop": {
     "versions": [
       "0.22.1",
+      "0.23.0",
     ],
   },
   "watchfiles": {
