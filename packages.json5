@@ -53,9 +53,9 @@
     ],
   },
   "markupsafe": {
+    "update": false,
     "versions": [
       "3.0.3",
-      "3.0.4",
     ],
   },
   "orjson": {

@@ -26,7 +26,7 @@ def fetch_sdist_info(
     with urlopen(f"https://pypi.org/pypi/{package}/json") as response:
         pypi_data = json.load(response)
     latest_version = pypi_data["info"]["version"]
-    if latest_version not in data["versions"]:
+    if data.get("update", True) and latest_version not in data["versions"]:
         data["versions"].append(latest_version)
 
     source = data.get("source", "pypi")
