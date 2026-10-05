@@ -76,11 +76,13 @@
   "pycares": {
     "versions": [
       "5.0.1",
+      "5.1.0",
     ],
   },
   "pycryptodomex": {
     "versions": [
       "3.23.0",
+      "3.24.0",
     ],
   },
   "pydantic-core": {
