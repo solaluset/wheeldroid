@@ -2,6 +2,7 @@
   "aiohttp": {
     "versions": [
       "3.14.3",
+      "3.14.4",
     ],
   },
   "ast-serialize": {
