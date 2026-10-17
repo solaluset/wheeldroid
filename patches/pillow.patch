@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index 625e54c05..a440c7ff7 100755
+index 625e54c05..435306610 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -1,5 +1,12 @@
@@ -41,6 +41,15 @@ index 625e54c05..a440c7ff7 100755
      MB_ML_LIBC=${AUDITWHEEL_POLICY::9}
      MB_ML_VER=${AUDITWHEEL_POLICY:9}
  fi
+@@ -176,7 +198,7 @@ function build_libavif {
+ 
+     python3 -m pip install meson ninja
+ 
+-    if ([[ "$PLAT" == "x86_64" ]] && [[ -z "$IOS_SDK" ]]) || [ -n "$SANITIZER" ]; then
++    if false; then
+         build_simple nasm 3.02 https://www.nasm.us/pub/nasm/releasebuilds/3.02
+     fi
+ 
 @@ -244,13 +266,13 @@ function build_zstd {
      if [ -e zstd-stamp ]; then return; fi
      local out_dir=$(fetch_unpack https://github.com/facebook/zstd/releases/download/v$ZSTD_VERSION/zstd-$ZSTD_VERSION.tar.gz)
