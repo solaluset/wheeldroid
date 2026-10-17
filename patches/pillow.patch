@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/wheels-dependencies.sh b/.github/workflows/wheels-dependencies.sh
-index 8f47b3d..a7e6b53 100755
+index 625e54c05..a440c7ff7 100755
 --- a/.github/workflows/wheels-dependencies.sh
 +++ b/.github/workflows/wheels-dependencies.sh
 @@ -1,5 +1,12 @@
@@ -66,7 +66,7 @@ index 8f47b3d..a7e6b53 100755
          build_simple xorgproto 2025.1 https://www.x.org/pub/individual/proto
          build_simple libXau 1.0.12 https://www.x.org/pub/individual/lib
          build_simple libpthread-stubs 0.5 https://xcb.freedesktop.org/dist
-@@ -300,9 +322,11 @@ function build {
+@@ -318,6 +340,8 @@ function build {
          https://storage.googleapis.com/downloads.webmproject.org/releases/webp tar.gz \
          --enable-libwebpmux --enable-libwebpdemux
  
@@ -74,12 +74,8 @@ index 8f47b3d..a7e6b53 100755
 +
      build_brotli
  
--    if [[ -n "$IS_MACOS" ]]; then
-+    if true; then
-         # Custom freetype build
-         build_simple freetype $FREETYPE_VERSION https://download.savannah.gnu.org/releases/freetype tar.gz --with-harfbuzz=no
-     else
-@@ -319,7 +343,6 @@ function build {
+     # FreeType and HarfBuzz each want the other:
+@@ -339,7 +363,6 @@ function build {
  function create_meson_cross_config {
      cat << EOF > $WORKDIR/meson-cross.txt
  [binaries]
@@ -87,7 +83,7 @@ index 8f47b3d..a7e6b53 100755
  cmake = '$(which cmake)'
  c = '$CC'
  cpp = '$CXX'
-@@ -332,9 +355,8 @@ c_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
+@@ -352,9 +375,8 @@ c_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
  cpp_link_args = '$CFLAGS -L$BUILD_PREFIX/lib'
  
  [host_machine]
@@ -99,7 +95,7 @@ index 8f47b3d..a7e6b53 100755
  cpu_family = '$(uname -m)'
  cpu = '$(uname -m)'
  endian = 'little'
-@@ -394,6 +416,8 @@ if [[ -n "$IS_MACOS" ]]; then
+@@ -414,6 +436,8 @@ if [[ -n "$IS_MACOS" ]]; then
      fi
  fi
  
@@ -109,7 +105,7 @@ index 8f47b3d..a7e6b53 100755
  
  # A safety catch for iOS. iOS can't use dynamic libraries, but clang will prefer
 diff --git a/pyproject.toml b/pyproject.toml
-index a2366e7..1b93640 100644
+index d978f3943..81ceb5b86 100644
 --- a/pyproject.toml
 +++ b/pyproject.toml
 @@ -3,6 +3,9 @@ build-backend = "backend"
@@ -122,7 +118,7 @@ index a2366e7..1b93640 100644
  ]
  backend-path = [
    "_custom_build",
-@@ -97,7 +100,7 @@ dynamic.version = { attr = "PIL.__version__" }
+@@ -101,7 +104,7 @@ dynamic.version = { attr = "PIL.__version__" }
  [tool.cibuildwheel]
  build-verbosity = 1
  config-settings = "raqm=enable raqm=vendor fribidi=vendor imagequant=disable"
@@ -132,10 +128,10 @@ index a2366e7..1b93640 100644
  test-requires = [
    "numpy",
 diff --git a/setup.py b/setup.py
-index f015a03..5ea9581 100644
+index 2d02cf129..8dfcd5577 100644
 --- a/setup.py
 +++ b/setup.py
-@@ -369,9 +369,7 @@ class pil_build_ext(build_ext):
+@@ -371,9 +371,7 @@ class pil_build_ext(build_ext):
          return True if value in configuration.get(option, []) else None
  
      def initialize_options(self) -> None:
@@ -146,7 +142,7 @@ index f015a03..5ea9581 100644
          build_ext.initialize_options(self)
          for x in self.feature:
              setattr(self, f"disable_{x}", self.check_configuration(x, "disable"))
-@@ -497,6 +495,12 @@ class pil_build_ext(build_ext):
+@@ -500,6 +498,12 @@ class pil_build_ext(build_ext):
          library_dirs: list[str] = []
          include_dirs: list[str] = []
  
@@ -159,7 +155,7 @@ index f015a03..5ea9581 100644
          pkg_config = None
          if _cmd_exists(os.environ.get("PKG_CONFIG", "pkg-config")):
              pkg_config = _pkg_config
-@@ -705,6 +709,11 @@ class pil_build_ext(build_ext):
+@@ -716,6 +720,11 @@ class pil_build_ext(build_ext):
                  _add_directory(library_dirs, os.path.join(best_path, "lib"))
                  _add_directory(include_dirs, os.path.join(best_path, "include"))
  
@@ -171,7 +167,7 @@ index f015a03..5ea9581 100644
          #
          # insert new dirs *before* default libs, to avoid conflicts
          # between Python PYD stub libs and real libraries
-@@ -905,7 +914,7 @@ class pil_build_ext(build_ext):
+@@ -916,7 +925,7 @@ class pil_build_ext(build_ext):
                  # so we have to guess; by default it is defined in all Windows builds.
                  # See #4237, #5243, #5359 for more information.
                  defs.append(("USE_WIN32_FILEIO", None))
@@ -180,7 +176,7 @@ index f015a03..5ea9581 100644
                  # Ensure transitive dependencies are linked.
                  libs.append("lzma")
          if feature.get("jpeg"):
-@@ -924,7 +933,7 @@ class pil_build_ext(build_ext):
+@@ -935,7 +944,7 @@ class pil_build_ext(build_ext):
              defs.append(("HAVE_LIBIMAGEQUANT", None))
          if feature.get("xcb"):
              libs.append(feature.get("xcb"))
@@ -189,7 +185,7 @@ index f015a03..5ea9581 100644
                  # Ensure transitive dependencies are linked.
                  libs.append("Xau")
              defs.append(("HAVE_XCB", None))
-@@ -959,9 +968,9 @@ class pil_build_ext(build_ext):
+@@ -970,9 +979,9 @@ class pil_build_ext(build_ext):
                      else:  # building FriBiDi shim from src/thirdparty
                          srcs.append("src/thirdparty/fribidi-shim/fribidi.c")
  
@@ -201,7 +197,7 @@ index f015a03..5ea9581 100644
  
              self._update_extension("PIL._imagingft", libs, defs, srcs)
  
-@@ -979,7 +988,7 @@ class pil_build_ext(build_ext):
+@@ -990,7 +999,7 @@ class pil_build_ext(build_ext):
          webp = feature.get("webp")
          if isinstance(webp, str):
              libs = [webp, webp + "mux", webp + "demux"]
